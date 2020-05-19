@@ -3,14 +3,13 @@
 
 int main() {
 	printf("~~~~~~~~~~~~~~~~~~~PROGRAM START~~~~~~~~~~~~~~~~~~~\n");
-	print_memory_info();
 	
 	DigitalOut out(LED_GREEN);
 	//AnalogIn seed(PTB2);
 	
 	Serial pc(USBTX, USBRX);
 	
-	Player p(Game::NUM_ROWS, Game::NUM_COLS/2, 1);
+	Player p(Game::NUM_ROWS-1, Game::NUM_COLS/2, 1);
 	Game g(p);
 	
 	g.init(PTB10);
@@ -22,11 +21,8 @@ int main() {
 	g.spawnObstacles();
 	g.loop();
 	
-	print_memory_info();
-	
-	//crashing here
 	g.spawnObstacles();
-	/*
+	
 	g.loop();
 	g.loop();
 	g.printBoard();
@@ -35,7 +31,7 @@ int main() {
 	g.printBoard();
 	g.loop();
 	g.printBoard();
-	*/
+	
 	while (1) {
 		out = !out;
 		

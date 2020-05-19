@@ -122,8 +122,6 @@ void Game::spawnObstacles() {
 			placeToken(0, y, BoardToken::obstacle);
 			
 			obstacles.push_back(new Obstacle(0, y));
-			
-			print_memory_info();
 		}
 	}
 }

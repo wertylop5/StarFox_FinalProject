@@ -5,7 +5,11 @@
 
 class Missile: public Projectile {
 public:
-	Missile() {};
+	Missile(int x, int y): Projectile(x, y, 1) {};
+	
+	virtual ~Missile() {};
+	
+	virtual void move() { posx--; }
 };
 
 #endif

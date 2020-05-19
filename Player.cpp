@@ -1,10 +1,7 @@
 #include "include/Game.h"
 #include "include/Player.h"
+#include "include/Missile.h"
 
-void Player::moveRight() {
-	posy += speed;
-}
-
-void Player::moveLeft() {
-	posy -= speed;
+Missile* Player::shoot() {
+	return new Missile(posx, posy);
 }

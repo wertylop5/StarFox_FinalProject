@@ -4,16 +4,20 @@
 
 int main() {
 	DigitalOut out(LED_GREEN);
+	//AnalogIn seed(PTB2);
 	
 	Serial pc(USBTX, USBRX);
 	
 	Player p(0, 0, 1);
 	Game g(p);
 	
-	g.init();
-	g.printBoard();
+	g.init(PTB10);
 	
 	g.spawnObstacles();
+	g.spawnMissiles();
+	g.printBoard();
+	
+	g.loop();
 	g.printBoard();
 	
 	while (1) {

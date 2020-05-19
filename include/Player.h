@@ -1,6 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+class Missile;
+
 class Player {
 private:
 	int posx;
@@ -11,11 +13,16 @@ public:
 	Player(int x, int y, int s)
 		: posx{ x }, posy{ y }, speed{ s }  {};
 	
-	//increments/decrements posy
-	void moveRight();
-	void moveLeft();
+	/**
+	increments/decrements posy
+	*/
+	void moveRight() { posy += 1; }
+	void moveLeft() { posy -= 1; }
 	
-	void shoot();
+	/**
+	spawns a new missile
+	*/
+	Missile* shoot();
 	
 	friend void Game::adjustPlayerBound();
 	

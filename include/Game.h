@@ -8,6 +8,11 @@
 #include "Obstacle.h"
 #include "Projectile.h"
 
+
+#include "mbed_mem_trace.h"
+void print_memory_info();
+
+
 class Player;
 class Missile;
 class Obstacle;
@@ -15,8 +20,6 @@ class Obstacle;
 class Game {
 private:
 	static const int MAX_OBSTACLES_PER_SPAWN{ 3 };
-	static const int NUM_ROWS{ 8 };
-	static const int NUM_COLS{ 8 };
 	
 	//keeps track of what numbers on the board mean what
 	enum class BoardToken {
@@ -32,6 +35,9 @@ private:
 	std::vector<Obstacle*> obstacles;
 	
 public:
+	static const int NUM_ROWS{ 8 };
+	static const int NUM_COLS{ 8 };
+	
 	Game(Player& p): board{}, player{ p } {};
 	
 	~Game();
@@ -47,8 +53,19 @@ public:
 	*/
 	void loop();
 	
-	
+	/**
+	sets all board positions to BoardToken::empty
+	*/
 	void clearBoard();
+	
+	/**
+	places all appropriate tokens on the board. should be called last in loop()
+	*/
+	void updateBoard();
+	
+	/**
+	prints the current state of the board to console
+	*/
 	void printBoard();
 	
 	/**
@@ -65,6 +82,11 @@ public:
 	checks if projectiles are on same spot
 	*/
 	bool hasCollided(Projectile* a, Projectile* b);
+	
+	/**
+	checks if a missile skipped over an obstacle (ie, row of missile < row of obstacle)
+	*/
+	bool isObstacleBehind(Missile* m, Obstacle* o);
 	
 	/**
 	calls the Player.shoot() function and keeps track of the new missile

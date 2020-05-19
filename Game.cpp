@@ -3,6 +3,24 @@
 
 #include "Game.h"
 
+void print_memory_info() {
+    // allocate enough room for every thread's stack statistics
+    int cnt = osThreadGetCount();
+    mbed_stats_stack_t *stats = (mbed_stats_stack_t*) malloc(cnt * sizeof(mbed_stats_stack_t));
+
+	
+    cnt = mbed_stats_stack_get_each(stats, cnt);
+    for (int i = 0; i < cnt; i++) {
+        printf("Thread: 0x%lX, Stack size: %lu / %lu\r\n", stats[i].thread_id, stats[i].max_size, stats[i].reserved_size);
+    }
+    free(stats);
+	
+    // Grab the heap statistics
+    mbed_stats_heap_t heap_stats;
+    mbed_stats_heap_get(&heap_stats);
+    printf("Heap size: %lu / %lu bytes\r\n", heap_stats.current_size, heap_stats.reserved_size);
+}
+
 
 Game::~Game() {
 	for (std::vector<Missile*>::iterator it = missiles.begin(); it != missiles.end(); ++it) {
@@ -28,6 +46,22 @@ void Game::clearBoard() {
 	}
 }
 
+void Game::updateBoard() {
+	for (auto it = missiles.begin(); it != missiles.end(); ++it) {
+		Missile *m = *it;
+		
+		placeToken(m->getPosx(), m->getPosy(), BoardToken::missile);
+	}
+	
+	for (auto it = obstacles.begin(); it != obstacles.end(); ++it) {
+		Obstacle *o = *it;
+		
+		placeToken(o->getPosx(), o->getPosy(), BoardToken::obstacle);
+	}
+	
+	placeToken(player.getPosx(), player.getPosy(), BoardToken::player);
+}
+
 void Game::printBoard() {
 	printf("-------------------------------------\r\n");
 	for (int x = 0; x < Game::NUM_ROWS; x++) {
@@ -44,36 +78,36 @@ void Game::placeToken(int x, int y, BoardToken token) {
 }
 
 void Game::loop() {
+	printf("looping\r\n");
 	clearBoard();
 	
 	for (auto it = missiles.begin(); it != missiles.end(); ++it) {
-		Missile *m = *it;
-		
-		m->move();
-		placeToken(m->getPosx(), m->getPosy(), BoardToken::missile);
+		(*it)->move();
+	}
+	
+	for (auto it = obstacles.begin(); it != obstacles.end(); ++it) {	
+		(*it)->move();
 	}
 	
 	//remove any obstacles that the missile collides with
 	for (auto it = missiles.begin(); it != missiles.end(); ++it) {
 		Missile *m = *it;
 		
-		for (auto it2 = obstacles.begin(); it2 != obstacles.end(); ++it2) {
+		auto it2 = obstacles.begin();
+		while (it2 != obstacles.end()) {
 			Obstacle *o = *it2;
 			
-			if (hasCollided(m, o)) {
+			if (hasCollided(m, o) || isObstacleBehind(m, o)) {
+				printf("collision detected\r\n");
+				
 				delete o;
 				obstacles.erase(it2);
-				
-				//assumption: obstacles don't overlap each other
-				break;
 			}
+			else { ++it2; }
 		}
 	}
 	
-	for (Obstacle* o : obstacles) {
-		o->move();
-		placeToken(o->getPosx(), o->getPosy(), BoardToken::obstacle);
-	}
+	updateBoard();
 }
 
 void Game::spawnObstacles() {
@@ -88,12 +122,18 @@ void Game::spawnObstacles() {
 			placeToken(0, y, BoardToken::obstacle);
 			
 			obstacles.push_back(new Obstacle(0, y));
+			
+			print_memory_info();
 		}
 	}
 }
 
 bool Game::hasCollided(Projectile* a, Projectile* b) {
 	return a->getPosx() == b->getPosx() && a->getPosy() == b->getPosy();
+}
+
+bool Game::isObstacleBehind(Missile* m, Obstacle* o) {
+	return m->getPosx() < o->getPosx() && m->getPosy() == o->getPosy();
 }
 
 void Game::handleShoot() {

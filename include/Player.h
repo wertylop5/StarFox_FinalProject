@@ -1,17 +1,13 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "Entity.h"
+
 class Missile;
 
-class Player {
-private:
-	int posx;
-	int posy;
-	int speed;
-
+class Player: public Entity {
 public:
-	Player(int x, int y, int s)
-		: posx{ x }, posy{ y }, speed{ s }  {};
+	Player(int x, int y, int s): Entity(x, y, s) {};
 	
 	/**
 	increments/decrements posy
@@ -25,8 +21,6 @@ public:
 	Missile* shoot();
 	
 	friend void Game::adjustPlayerBound();
-	
-	//void setPosy(int y) { posy = y; }
 };
 
 #endif

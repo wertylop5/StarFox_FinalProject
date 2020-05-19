@@ -1,24 +1,17 @@
 #ifndef PROJECTILE_H
 #define PROJECTILE_H
 
-class Projectile {
-protected:
-	int posx;
-	int posy;
-	int speed{ 1 };
+#include "Entity.h"
 
+class Projectile: public Entity {
 public:
-	Projectile(int x, int y): posx{ x }, posy{ y } {};
+	Projectile(int x, int y): Entity(x, y, 1) {};
 	
-	Projectile(int x, int y, int s)
-		: posx{ x }, posy{ y }, speed{ s } {};
+	Projectile(int x, int y, int s): Entity(x, y, s) {};
 	
 	virtual ~Projectile() {};
 	
 	virtual void move() {};
-	
-	int getPosx() { return posx; };
-	int getPosy() { return posy; };
 };
 
 #endif

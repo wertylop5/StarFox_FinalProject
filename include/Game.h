@@ -61,7 +61,13 @@ private:
 	
 	bool isInBounds(Entity *e);
 	
-	void removeOutOfBoundsEntities();
+	void moveProjectiles();
+	
+	/**
+	runs checks on all projectiles to see if any have collided
+	*/
+	void checkProjectileCollision();
+	void removeOutOfBoundsProjectiles();
 	
 public:
 	static const int NUM_ROWS{ 8 };

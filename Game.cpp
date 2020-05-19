@@ -64,6 +64,7 @@ void Game::updateBoard() {
 
 void Game::printBoard() {
 	printf("-------------------------------------\r\n");
+	updateBoard();
 	for (int x = 0; x < Game::NUM_ROWS; x++) {
 		std::string row;
 		for (int y = 0; y < Game::NUM_COLS; ++y) {
@@ -82,7 +83,51 @@ bool Game::isInBounds(Entity *e) {
 			e->getPosy() >= 0 && e->getPosy() < Game::NUM_COLS;
 }
 
-void Game::removeOutOfBoundsEntities() {
+void Game::moveProjectiles() {
+	for (auto it = missiles.begin(); it != missiles.end(); ++it) {
+		(*it)->move();
+	}
+	
+	for (auto it = obstacles.begin(); it != obstacles.end(); ++it) {	
+		(*it)->move();
+	}
+}
+
+void Game::checkProjectileCollision() {
+	//remove any obstacles that the missile collides with
+	auto it = missiles.begin();
+	while (it != missiles.end()) {
+		Missile *m = *it;
+		
+		auto it2 = obstacles.begin();
+		while (it2 != obstacles.end()) {
+			Obstacle *o = *it2;
+			
+			if (hasCollided(m, o) || isObstacleBehind(m, o)) {
+				printf("obstacle hit\r\n");
+				
+				delete o;
+				obstacles.erase(it2);
+				
+				m->lowerDurability();
+			}
+			else { ++it2; }
+			
+			//delete the missile that's destroyed
+			if (!(m->getDurability())) break;
+		}
+		
+		if (!(m->getDurability())) {
+			printf("missile destroyed\n");
+			
+			delete m;
+			missiles.erase(it);
+		}
+		else { ++it; }
+	}
+}
+
+void Game::removeOutOfBoundsProjectiles() {
 	auto it = missiles.begin();
 	while ( it != missiles.end()) {
 		Missile *m = *it;
@@ -114,33 +159,10 @@ void Game::loop() {
 	printf("looping\r\n");
 	clearBoard();
 	
-	for (auto it = missiles.begin(); it != missiles.end(); ++it) {
-		(*it)->move();
-	}
-	
-	for (auto it = obstacles.begin(); it != obstacles.end(); ++it) {	
-		(*it)->move();
-	}
-	
-	//remove any obstacles that the missile collides with
-	for (auto it = missiles.begin(); it != missiles.end(); ++it) {
-		Missile *m = *it;
-		
-		auto it2 = obstacles.begin();
-		while (it2 != obstacles.end()) {
-			Obstacle *o = *it2;
-			
-			if (hasCollided(m, o) || isObstacleBehind(m, o)) {
-				printf("collision detected\r\n");
-				
-				delete o;
-				obstacles.erase(it2);
-			}
-			else { ++it2; }
-		}
-	}
-	
-	removeOutOfBoundsEntities();
+	moveProjectiles();
+	spawnObstacles();
+	removeOutOfBoundsProjectiles();
+	checkProjectileCollision();
 	updateBoard();
 }
 
@@ -153,7 +175,9 @@ bool Game::isObstacleBehind(Missile* m, Obstacle* o) {
 }
 
 void Game::handleShoot() {
+	Missile *newMissile = player.shoot();
 	
+	missiles.push_back(newMissile);
 }
 
 void Game::spawnObstacles() {
@@ -165,7 +189,7 @@ void Game::spawnObstacles() {
 		if (rand() % 2) {
 			numSpawned++;
 			
-			placeToken(0, y, BoardToken::obstacle);
+			//placeToken(0, y, BoardToken::obstacle);
 			
 			obstacles.push_back(new Obstacle(0, y));
 		}
@@ -175,7 +199,7 @@ void Game::spawnObstacles() {
 void Game::spawnMissiles() {
 	for (int y = 0; y < Game::NUM_COLS; ++y) {
 		missiles.push_back(new Missile(Game::NUM_ROWS-1, y));
-		placeToken(Game::NUM_ROWS-1, y, BoardToken::missile);
+		//placeToken(Game::NUM_ROWS-1, y, BoardToken::missile);
 	}
 }
 

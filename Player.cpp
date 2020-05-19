@@ -3,5 +3,5 @@
 #include "include/Missile.h"
 
 Missile* Player::shoot() {
-	return new Missile(posx, posy);
+	return new Missile(posx-1, posy);
 }

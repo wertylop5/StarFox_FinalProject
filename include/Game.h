@@ -34,6 +34,35 @@ private:
 	std::vector<Missile*> missiles;
 	std::vector<Obstacle*> obstacles;
 	
+	/**
+	sets all board positions to BoardToken::empty
+	*/
+	void clearBoard();
+	
+	/**
+	places all appropriate tokens on the board. should be called last in loop()
+	*/
+	void updateBoard();
+	
+	/**
+	writes a value representing an object onto the board
+	*/
+	void placeToken(int x, int y, BoardToken token);
+	
+	/**
+	checks if projectiles are on same spot
+	*/
+	bool hasCollided(Projectile* a, Projectile* b);
+	
+	/**
+	checks if a missile skipped over an obstacle (ie, row of missile < row of obstacle)
+	*/
+	bool isObstacleBehind(Missile* m, Obstacle* o);
+	
+	bool isInBounds(Entity *e);
+	
+	void removeOutOfBoundsEntities();
+	
 public:
 	static const int NUM_ROWS{ 8 };
 	static const int NUM_COLS{ 8 };
@@ -54,39 +83,14 @@ public:
 	void loop();
 	
 	/**
-	sets all board positions to BoardToken::empty
-	*/
-	void clearBoard();
-	
-	/**
-	places all appropriate tokens on the board. should be called last in loop()
-	*/
-	void updateBoard();
-	
-	/**
 	prints the current state of the board to console
 	*/
 	void printBoard();
 	
 	/**
-	writes a value representing an object onto the board
-	*/
-	void placeToken(int x, int y, BoardToken token);
-	
-	/**
 	Spawns some obstacles at the top of the grid
 	*/
 	void spawnObstacles();
-	
-	/**
-	checks if projectiles are on same spot
-	*/
-	bool hasCollided(Projectile* a, Projectile* b);
-	
-	/**
-	checks if a missile skipped over an obstacle (ie, row of missile < row of obstacle)
-	*/
-	bool isObstacleBehind(Missile* m, Obstacle* o);
 	
 	/**
 	calls the Player.shoot() function and keeps track of the new missile

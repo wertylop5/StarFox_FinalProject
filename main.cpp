@@ -14,23 +14,18 @@ int main() {
 	
 	g.init(PTB10);
 	
-	g.spawnMissiles();
+	//g.spawnMissiles();
+	g.spawnObstacles();
+	g.printBoard();
+	
+	for (int x = 0; x < 7; x++) g.loop();
+	
+	g.printBoard();
 	
 	print_memory_info();
-	
-	g.spawnObstacles();
-	g.loop();
-	
-	g.spawnObstacles();
-	
-	g.loop();
 	g.loop();
 	g.printBoard();
-	
-	g.loop();
-	g.printBoard();
-	g.loop();
-	g.printBoard();
+	print_memory_info();
 	
 	while (1) {
 		out = !out;

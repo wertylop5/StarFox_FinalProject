@@ -77,6 +77,39 @@ void Game::placeToken(int x, int y, BoardToken token) {
 	board[x][y] = static_cast<int>(token);
 }
 
+bool Game::isInBounds(Entity *e) {
+	return e->getPosx() >= 0 && e->getPosx() < Game::NUM_ROWS &&
+			e->getPosy() >= 0 && e->getPosy() < Game::NUM_COLS;
+}
+
+void Game::removeOutOfBoundsEntities() {
+	auto it = missiles.begin();
+	while ( it != missiles.end()) {
+		Missile *m = *it;
+		
+		if (!isInBounds(m)) {
+			printf("removing oob missile\n");
+			
+			delete m;
+			missiles.erase(it);
+		}
+		else { ++it; }
+	}
+	
+	auto it2 = obstacles.begin();
+	while ( it2 != obstacles.end()) {
+		Obstacle *o = *it2;
+		
+		if (!isInBounds(o)) {
+			printf("removing oob obstacle\n");
+			
+			delete o;
+			obstacles.erase(it2);
+		}
+		else { ++it2; }
+	}
+}
+
 void Game::loop() {
 	printf("looping\r\n");
 	clearBoard();
@@ -107,7 +140,20 @@ void Game::loop() {
 		}
 	}
 	
+	removeOutOfBoundsEntities();
 	updateBoard();
+}
+
+bool Game::hasCollided(Projectile* a, Projectile* b) {
+	return a->getPosx() == b->getPosx() && a->getPosy() == b->getPosy();
+}
+
+bool Game::isObstacleBehind(Missile* m, Obstacle* o) {
+	return m->getPosx() < o->getPosx() && m->getPosy() == o->getPosy();
+}
+
+void Game::handleShoot() {
+	
 }
 
 void Game::spawnObstacles() {
@@ -124,18 +170,6 @@ void Game::spawnObstacles() {
 			obstacles.push_back(new Obstacle(0, y));
 		}
 	}
-}
-
-bool Game::hasCollided(Projectile* a, Projectile* b) {
-	return a->getPosx() == b->getPosx() && a->getPosy() == b->getPosy();
-}
-
-bool Game::isObstacleBehind(Missile* m, Obstacle* o) {
-	return m->getPosx() < o->getPosx() && m->getPosy() == o->getPosy();
-}
-
-void Game::handleShoot() {
-	
 }
 
 void Game::spawnMissiles() {

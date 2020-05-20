@@ -1,33 +1,19 @@
 #include "mbed.h"
-#include "include/Game.h"
-#include "include/hardware/Shooter.h"
+#include "include/hardware/LEDMatrix.h"
 
-DigitalOut led(LED1);
-void toggle(){
-	led = !led;
-}
+const unsigned char led1[]= {
+    0xFF,0x18,0x18,0x18,0x18,0x18,0x18,0xFF
+};  //H
+const unsigned char led2[]= {
+    0x1F,0x60,0x80,0x40,0x40,0x80,0x60,0x1F
+};  //W
+ 
+int main()
+{
+	LEDMatrix::create_LEDMatrix(PTD2, PTD0, PTD1);
+	LEDMatrix::display(NULL);
+	while(1){
 
-int main() {
-	Shooter::create_shooter(PTC3, toggle);
-	
-	DigitalOut out(LED_GREEN);
-	
-	Serial pc(USBTX, USBRX);
-	
-	Player p(0, 0, 1);
-	Game g(p);
-	
-	g.init();
-	g.printBoard();
-	
-	g.spawnObstacles();
-	g.printBoard();
-	
-	while (1) {
-		out = !out;
-		
-		ThisThread::sleep_for(500);
 	}
-	
 	return 0;
 }

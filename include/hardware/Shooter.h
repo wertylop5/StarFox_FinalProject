@@ -11,6 +11,7 @@ class Shooter {
         /**
          * Create a debounced button for shooting.
          * Uses singleton design pattern.
+         * @param button_pin Button pin on board.
          * @param shoot Handles shooting when button pressed.
          */
         static void create_shooter(PinName button_pin, void (*shoot)());

@@ -155,6 +155,27 @@ void Game::removeOutOfBoundsProjectiles() {
 	}
 }
 
+void Game::checkPlayerCollision() {
+	auto it2 = obstacles.begin();
+	while ( it2 != obstacles.end()) {
+		Obstacle *o = *it2;
+		
+		if (hasCollided(&player, o)) {
+			printf("player hit\n");
+			
+			delete o;
+			obstacles.erase(it2);
+			
+			player.lowerHealth();
+			
+			if (!player.isAlive()) break;
+		}
+		else { ++it2; }
+	}
+	
+	if (!player.isAlive()) endGameFlag = true;
+}
+
 void Game::loop() {
 	printf("looping\r\n");
 	clearBoard();
@@ -163,10 +184,11 @@ void Game::loop() {
 	spawnObstacles();
 	removeOutOfBoundsProjectiles();
 	checkProjectileCollision();
+	checkPlayerCollision();
 	updateBoard();
 }
 
-bool Game::hasCollided(Projectile* a, Projectile* b) {
+bool Game::hasCollided(Entity* a, Entity* b) {
 	return a->getPosx() == b->getPosx() && a->getPosy() == b->getPosy();
 }
 

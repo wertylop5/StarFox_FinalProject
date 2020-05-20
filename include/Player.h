@@ -6,8 +6,13 @@
 class Missile;
 
 class Player: public Entity {
+private:
+	int health;
+
 public:
-	Player(int x, int y, int s): Entity(x, y, s) {};
+	Player(int x, int y, int s, int h): Entity(x, y, s), health{ h } {};
+	
+	Player(int x, int y, int s): Player(x, y, s, 3) {};
 	
 	/**
 	increments/decrements posy
@@ -19,6 +24,11 @@ public:
 	spawns a new missile
 	*/
 	Missile* shoot();
+	
+	void lowerHealth() { health--; }
+	void increaseHealth() { health++; }
+	
+	bool isAlive() { return health > 0; }
 	
 	friend void Game::adjustPlayerBound();
 };

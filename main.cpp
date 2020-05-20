@@ -24,6 +24,8 @@ int main() {
 	g.printBoard();
 	g.loop();
 	g.printBoard();
+	g.loop();
+	g.printBoard();
 	
 	while (1) {
 		out = !out;

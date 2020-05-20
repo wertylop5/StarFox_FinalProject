@@ -33,6 +33,7 @@ private:
 	Player& player;
 	std::vector<Missile*> missiles;
 	std::vector<Obstacle*> obstacles;
+	bool endGameFlag;
 	
 	/**
 	sets all board positions to BoardToken::empty
@@ -50,9 +51,9 @@ private:
 	void placeToken(int x, int y, BoardToken token);
 	
 	/**
-	checks if projectiles are on same spot
+	checks if entities are on same spot
 	*/
-	bool hasCollided(Projectile* a, Projectile* b);
+	bool hasCollided(Entity* a, Entity* b);
 	
 	/**
 	checks if a missile skipped over an obstacle (ie, row of missile < row of obstacle)
@@ -68,12 +69,13 @@ private:
 	*/
 	void checkProjectileCollision();
 	void removeOutOfBoundsProjectiles();
+	void checkPlayerCollision();
 	
 public:
 	static const int NUM_ROWS{ 8 };
 	static const int NUM_COLS{ 8 };
 	
-	Game(Player& p): board{}, player{ p } {};
+	Game(Player& p): board{}, player{ p }, endGameFlag{ false } {};
 	
 	~Game();
 	

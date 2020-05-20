@@ -5,9 +5,9 @@
 
 class Projectile: public Entity {
 public:
-	Projectile(int x, int y): Entity(x, y, 1) {};
-	
 	Projectile(int x, int y, int s): Entity(x, y, s) {};
+	
+	Projectile(int x, int y): Projectile(x, y, 1) {};
 	
 	virtual ~Projectile() {};
 	

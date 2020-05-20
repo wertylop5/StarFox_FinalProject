@@ -95,7 +95,7 @@ public:
 	*/
 	int clampedBoard[8][8];
 	
-	Game(Player& p): board{}, player{ p }, endGameFlag{ false } {};
+	Game(Player& p): board{ }, player{ p }, clampedBoard{ }, endGameFlag{ false } {};
 	
 	~Game();
 	

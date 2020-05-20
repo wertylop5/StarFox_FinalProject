@@ -84,6 +84,14 @@ void Game::printBoard() {
 	}
 }
 
+void Game::clampBoard() {
+	for (int x = 0; x < Game::NUM_ROWS; x++) {
+		for (int y = 0; y < Game::NUM_COLS; ++y) {
+			clampedBoard[x][y] = board[x][y] == 0 ? 0 : std::min(board[x][y], 1);
+		}
+	}
+}
+
 void Game::placeToken(int x, int y, BoardToken token) {
 	board[x][y] = static_cast<int>(token);
 }
@@ -204,10 +212,18 @@ void Game::loop() {
 	
 	decrementCounters();
 	
+	if (refreshCounters[Missile::LABEL] == 0) {
+		refreshCounters[Missile::LABEL] = refreshSpeeds[Missile::LABEL];
+		
+		moveMissiles();
+	}
+	if (refreshCounters[Obstacle::LABEL] == 0) {
+		refreshCounters[Obstacle::LABEL] = refreshSpeeds[Obstacle::LABEL];
+		
+		moveObstacles();
+		spawnObstacles();
+	}
 	
-	moveMissiles();
-	moveObstacles();
-	spawnObstacles();
 	removeOutOfBoundsProjectiles();
 	checkProjectileCollision();
 	checkPlayerCollision();

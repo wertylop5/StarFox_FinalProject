@@ -20,6 +20,8 @@ int main() {
 		g.printBoard();
 	}
 	
+	g.clampBoard();
+	
 	g.loop();
 	g.printBoard();
 	g.loop();

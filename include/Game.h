@@ -90,6 +90,11 @@ public:
 	*/
 	std::unordered_map<std::string, const int> refreshSpeeds;
 	
+	/**
+	a version of the internal game board with values clamped to 0 and 1
+	*/
+	int clampedBoard[8][8];
+	
 	Game(Player& p): board{}, player{ p }, endGameFlag{ false } {};
 	
 	~Game();
@@ -109,6 +114,11 @@ public:
 	prints the current state of the board to console
 	*/
 	void printBoard();
+	
+	/**
+	sets clampedBoard to the internal board values clamped to 0 and 1
+	*/
+	void clampBoard();
 	
 	/**
 	Spawns some obstacles at the top of the grid

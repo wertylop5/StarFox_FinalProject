@@ -1,8 +1,6 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-class Missile;
-
 class Entity {
 protected:
 	int posx;
@@ -13,12 +11,13 @@ public:
 	Entity(int x, int y, int s)
 		: posx{ x }, posy{ y }, speed{ s }  {};
 	
-	Entity(): Entity(0, 0, 0) {};
+	Entity(): Entity(0, 0, 1) {};
 	
 	virtual ~Entity() {};
 	
 	int getPosx() { return posx; }
 	int getPosy() { return posy; }
+	int getSpeed() { return speed; }
 };
 
 #endif

@@ -38,6 +38,16 @@ void Game::init(PinName seed_pin) {
 	srand(seed.read_u16());
 	
 	clearBoard();
+	
+	refreshSpeeds.emplace(Player::LABEL, 1);
+	refreshSpeeds.emplace(Projectile::LABEL, 1);
+	refreshSpeeds.emplace(Missile::LABEL, 1);
+	refreshSpeeds.emplace(Obstacle::LABEL, 3);
+	
+	refreshCounters.emplace(Player::LABEL, refreshSpeeds[Player::LABEL]);
+	refreshCounters.emplace(Projectile::LABEL, refreshSpeeds[Projectile::LABEL]);
+	refreshCounters.emplace(Missile::LABEL, refreshSpeeds[Missile::LABEL]);
+	refreshCounters.emplace(Obstacle::LABEL, refreshSpeeds[Obstacle::LABEL]);
 }
 
 void Game::clearBoard() {
@@ -83,11 +93,23 @@ bool Game::isInBounds(Entity *e) {
 			e->getPosy() >= 0 && e->getPosy() < Game::NUM_COLS;
 }
 
-void Game::moveProjectiles() {
+void Game::decrementCounters() {
+	for (auto it = std::begin(refreshCounters); it != std::end(refreshCounters); ++it) {
+		refreshCounters[it->first] -= 1;
+	}
+	
+	for (auto it = std::begin(refreshCounters); it != std::end(refreshCounters); ++it) {
+		printf("%s: %d\n", (it->first).c_str(), it->second);
+	}
+}
+
+void Game::moveMissiles() {
 	for (auto it = missiles.begin(); it != missiles.end(); ++it) {
 		(*it)->move();
 	}
-	
+}
+
+void Game::moveObstacles() {
 	for (auto it = obstacles.begin(); it != obstacles.end(); ++it) {	
 		(*it)->move();
 	}
@@ -180,7 +202,11 @@ void Game::loop() {
 	printf("looping\r\n");
 	clearBoard();
 	
-	moveProjectiles();
+	decrementCounters();
+	
+	
+	moveMissiles();
+	moveObstacles();
 	spawnObstacles();
 	removeOutOfBoundsProjectiles();
 	checkProjectileCollision();

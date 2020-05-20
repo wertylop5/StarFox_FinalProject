@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <string>
 #include "Entity.h"
 
 class Missile;
@@ -10,6 +11,8 @@ private:
 	int health;
 
 public:
+	static const std::string LABEL;
+	
 	Player(int x, int y, int s, int h): Entity(x, y, s), health{ h } {};
 	
 	Player(int x, int y, int s): Player(x, y, s, 3) {};

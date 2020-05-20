@@ -5,6 +5,31 @@
 // Adjust the clock freq as neccessary.
 #define CLOCK_FREQUENCY 1000000
 
+/**
+#include "mbed.h"
+#include "include/Game.h"
+#include "include/hardware/LEDMatrix.h"
+
+int board[8][8] = {
+	{1, 1, 1, 1, 1, 1, 1, 1},
+	{1, 0, 0, 0, 0, 0, 0, 1},
+	{1, 0, 1, 0, 0, 1, 0, 1},
+	{1, 0, 0, 0, 0, 0, 0, 1},
+	{1, 1, 0, 0, 0, 0, 1, 1},
+	{1, 0, 1, 0, 0, 1, 0, 1},
+	{1, 0, 0, 1, 1, 0, 0, 1},
+	{1, 1, 1, 1, 1, 1, 1, 1}
+}; //displays smiley face
+
+int main() {
+	LEDMatrix::create_LEDMatrix(PTD2, PTD0, PTD1);
+    LEDMatrix::display(board);
+
+    while(1){
+        //do stuff
+    }
+*/
+
 class LEDMatrix{
     public:
         /**
@@ -20,7 +45,7 @@ class LEDMatrix{
         /** Displays the current state of board.
          * @param board A 2D array of ints containing 0 if LED is off and 1 if on.
          */
-        static void display(int (*board)[8][8]);
+        static void display(int board[8][8]);
         /** Displays an empty board state.
          */
         static void reset();
@@ -39,7 +64,7 @@ class LEDMatrix{
         static DigitalOut* driver_cs;
         static void SPI_Write2(unsigned char MSB, unsigned char LSB);
         static void Init_MAX7219();
-        static char[] convertToHexArray(int (*board)[8][8])
+        static void convertToHexArray(unsigned char* output, int board[8][8]);
 };
 
 #endif

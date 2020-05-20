@@ -1,10 +1,9 @@
 #include "include/Game.h"
 #include "include/Player.h"
+#include "include/Missile.h"
 
-void Player::moveRight() {
-	posy += speed;
-}
+const std::string Player::LABEL = "Player";
 
-void Player::moveLeft() {
-	posy -= speed;
+Missile* Player::shoot() {
+	return new Missile(posx-1, posy);
 }

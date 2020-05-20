@@ -3,6 +3,24 @@
 
 #include "mbed.h"
 
+/**
+#include "mbed.h"
+#include "include/Game.h"
+#include "include/hardware/Shooter.h"
+
+DigitalOut x(LED1);
+void toggle(){
+	x = !x;
+}
+int main() {
+	Shooter::create_shooter(PTC6, toggle);
+    while(1){
+        //do stuff
+	}
+	return 0;
+}  
+*/
+
 // This delay sets minimum time between clicks in millis.
 #define DEBOUNCE_DELAY 15
 

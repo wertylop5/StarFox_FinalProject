@@ -1,16 +1,20 @@
 #ifndef PROJECTILE_H
 #define PROJECTILE_H
 
-class Projectile {
-private:
-	int speed{ 1 };
-	int posx;
-	int posy;
+#include <string>
+#include "Entity.h"
 
+class Projectile: public Entity {
 public:
-	Projectile() {};
+	static const std::string LABEL;
 	
-	void move();
+	Projectile(int x, int y, int s): Entity(x, y, s) {};
+	
+	Projectile(int x, int y): Projectile(x, y, 1) {};
+	
+	virtual ~Projectile() {};
+	
+	virtual void move() {};
 };
 
 #endif

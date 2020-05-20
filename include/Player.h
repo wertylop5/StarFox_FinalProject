@@ -1,25 +1,39 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-class Player {
+#include <string>
+#include "Entity.h"
+
+class Missile;
+
+class Player: public Entity {
 private:
-	int posx;
-	int posy;
-	int speed;
+	int health;
 
 public:
-	Player(int x, int y, int s)
-		: posx{ x }, posy{ y }, speed{ s }  {};
+	static const std::string LABEL;
 	
-	//increments/decrements posy
-	void moveRight();
-	void moveLeft();
+	Player(int x, int y, int s, int h): Entity(x, y, s), health{ h } {};
 	
-	void shoot();
+	Player(int x, int y, int s): Player(x, y, s, 3) {};
+	
+	/**
+	increments/decrements posy
+	*/
+	void moveRight() { posy += 1; }
+	void moveLeft() { posy -= 1; }
+	
+	/**
+	spawns a new missile
+	*/
+	Missile* shoot();
+	
+	void lowerHealth() { health--; }
+	void increaseHealth() { health++; }
+	
+	bool isAlive() { return health > 0; }
 	
 	friend void Game::adjustPlayerBound();
-	
-	//void setPosy(int y) { posy = y; }
 };
 
 #endif

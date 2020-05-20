@@ -51,19 +51,26 @@ LEDMatrix::LEDMatrix(){
     printf("Use LEDMatrix::create_LEDMatrix.\r\n");
 }
 
-void LEDMatrix::display(int (*board)[8][8]){
-    unsigned char led1[]= {
-        0xFF,0x18,0x18,0x18,0x18,0x18,0x18,0xFF
-    };  //H
-    for(int i=1; i<9; i++){      // Write first character (8 rows)
-        LEDMatrix::SPI_Write2(i,led1[i-1]);
+void LEDMatrix::convertToHexArray(unsigned char* output, int board[8][8]){
+    for(int i=0; i < 8; i++){
+        for(int j=0; j < 8; j++){
+            if(board[i][j] >= 1){
+                output[i] |= 1 << j;
+            }
+            else{
+                output[i] &= ~(1 << j);
+            }
+        }
     }
 }
 
-char[] LEDMatrix::convertToHexArray(int (*board)[8][8]){
-    char output[8];
-    for(int i=0; i < 8; i++){
-        
-    } 
-    return output;
+void LEDMatrix::display(int board[8][8]){
+    // unsigned char led1[]= {
+    //     0xFF,0x18,0x18,0x18,0x18,0x18,0x18,0xFF
+    // };  //H
+    unsigned char led1[8];
+    LEDMatrix::convertToHexArray(led1, board);
+    for(int i=1; i<9; i++){      // Write first character (8 rows)
+        LEDMatrix::SPI_Write2(i,led1[i-1]);
+    }
 }

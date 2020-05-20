@@ -1,19 +1,37 @@
 #include "mbed.h"
-#include "include/hardware/LEDMatrix.h"
+#include "include/Game.h"
 
-const unsigned char led1[]= {
-    0xFF,0x18,0x18,0x18,0x18,0x18,0x18,0xFF
-};  //H
-const unsigned char led2[]= {
-    0x1F,0x60,0x80,0x40,0x40,0x80,0x60,0x1F
-};  //W
- 
-int main()
-{
-	LEDMatrix::create_LEDMatrix(PTD2, PTD0, PTD1);
-	LEDMatrix::display(NULL);
-	while(1){
-
+int main() {
+	printf("~~~~~~~~~~~~~~~~~~~PROGRAM START~~~~~~~~~~~~~~~~~~~\n");
+	
+	DigitalOut out(LED_GREEN);
+	//AnalogIn seed(PTB2);
+	
+	Serial pc(USBTX, USBRX);
+	
+	Player p(Game::NUM_ROWS-1, Game::NUM_COLS/2, 1);
+	Game g(p);
+	
+	g.init(PTB10);
+	
+	g.spawnMissiles();
+	for (int x = 0; x < 7; x++) {
+		g.loop();
+		g.printBoard();
 	}
+	
+	g.loop();
+	g.printBoard();
+	g.loop();
+	g.printBoard();
+	g.loop();
+	g.printBoard();
+	
+	while (1) {
+		out = !out;
+		
+		ThisThread::sleep_for(500);
+	}
+	
 	return 0;
 }

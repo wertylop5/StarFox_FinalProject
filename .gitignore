@@ -4,5 +4,9 @@ BUILD/*
 __pycache__/*
 mbed_settings.py
 mbed_app.json
-mbed_os.lib
 .git/*
+Joystick/*
+*.swp
+*.pyc
+mbed-os/*
+

@@ -14,10 +14,6 @@
 #include "mbed_mem_trace.h"
 void print_memory_info();
 
-/**
-TODO: figure a different way to spawn missiles (can't do inside an interrupt)
-*/
-
 class Player;
 class Missile;
 class Obstacle;
@@ -38,6 +34,15 @@ private:
 	Player& player;
 	std::vector<Missile*> missiles;
 	std::vector<Obstacle*> obstacles;
+	
+	/*
+	stores the location of missiles to be spawned
+	
+	invariant: must always contain an even number of elements
+		even indexed elements: x coordinate
+		odd indexed elements: y coordinate
+	*/
+	std::vector<int> missile_locations;
 	bool endGameFlag;
 	
 	/*
@@ -76,6 +81,12 @@ private:
 	
 	void moveMissiles();
 	void moveObstacles();
+	
+	/*
+	if missile requests exists, calls the Player.shoot() function and keeps track of
+	the new missile
+	*/
+	void addMissiles();
 	
 	/*
 	runs checks on all projectiles to see if any have collided
@@ -131,7 +142,7 @@ public:
 	void spawnObstacles();
 	
 	/**
-	calls the Player.shoot() function and keeps track of the new missile
+	notifies the game to create a missile on the next refresh
 	*/
 	void handleShoot();
 	

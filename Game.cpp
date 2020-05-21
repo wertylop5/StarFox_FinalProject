@@ -124,6 +124,17 @@ void Game::moveObstacles() {
 	}
 }
 
+void Game::addMissiles() {
+	int x, y;
+	while (!missile_locations.size()) {
+		//the location on the end is odd
+		y = missile_locations.pop_back();
+		x = missile_locations.pop_back();
+		
+		missiles.push_back(new Missile(x, y));
+	}
+}
+
 void Game::checkProjectileCollision() {
 	//remove any obstacles that the missile collides with
 	auto it = missiles.begin();
@@ -213,6 +224,7 @@ bool Game::loop() {
 	clearBoard();
 	
 	decrementCounters();
+	adjustPlayerBound();
 	
 	if (refreshCounters[Missile::LABEL] == 0) {
 		refreshCounters[Missile::LABEL] = refreshSpeeds[Missile::LABEL];
@@ -229,7 +241,7 @@ bool Game::loop() {
 	removeOutOfBoundsProjectiles();
 	checkProjectileCollision();
 	checkPlayerCollision();
-	adjustPlayerBound();
+	addMissiles();
 	updateBoard();
 	
 	return !endGameFlag;
@@ -244,9 +256,11 @@ bool Game::isObstacleBehind(Missile* m, Obstacle* o) {
 }
 
 void Game::handleShoot() {
-	Missile *newMissile = player.shoot();
+	//Missile *newMissile = player.shoot();
 	
-	missiles.push_back(newMissile);
+	//missiles.push_back(newMissile);
+	missile_locations.push_back(player.getPosx()-1);
+	missile_locations.push_back(player.getPosy());
 }
 
 void Game::spawnObstacles() {

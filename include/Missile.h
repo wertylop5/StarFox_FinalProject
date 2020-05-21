@@ -1,5 +1,5 @@
-#ifndef MISSLE_H
-#define MISSLE_H
+#ifndef MISSILE_H
+#define MISSILE_H
 
 #include <string>
 #include "Projectile.h"

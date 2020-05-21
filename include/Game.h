@@ -14,6 +14,9 @@
 #include "mbed_mem_trace.h"
 void print_memory_info();
 
+/**
+TODO: figure a different way to spawn missiles (can't do inside an interrupt)
+*/
 
 class Player;
 class Missile;
@@ -95,7 +98,7 @@ public:
 	*/
 	int clampedBoard[8][8];
 	
-	Game(Player& p): board{ }, player{ p }, clampedBoard{ }, endGameFlag{ false } {};
+	Game(Player& p): board{ }, player{ p }, endGameFlag{ false }, clampedBoard{ } {};
 	
 	~Game();
 	
@@ -107,8 +110,10 @@ public:
 	
 	/**
 	update all game variables
+	
+	returns whether or not the game should continue running
 	*/
-	void loop();
+	bool loop();
 	
 	/**
 	prints the current state of the board to console

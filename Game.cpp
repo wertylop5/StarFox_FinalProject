@@ -106,6 +106,7 @@ void Game::decrementCounters() {
 		refreshCounters[it->first] -= 1;
 	}
 	
+	//print values for debugging
 	for (auto it = std::begin(refreshCounters); it != std::end(refreshCounters); ++it) {
 		printf("%s: %d\n", (it->first).c_str(), it->second);
 	}
@@ -129,6 +130,7 @@ void Game::checkProjectileCollision() {
 	while (it != missiles.end()) {
 		Missile *m = *it;
 		
+		//check every obstacle
 		auto it2 = obstacles.begin();
 		while (it2 != obstacles.end()) {
 			Obstacle *o = *it2;
@@ -206,7 +208,7 @@ void Game::checkPlayerCollision() {
 	if (!player.isAlive()) endGameFlag = true;
 }
 
-void Game::loop() {
+bool Game::loop() {
 	printf("looping\r\n");
 	clearBoard();
 	
@@ -227,7 +229,10 @@ void Game::loop() {
 	removeOutOfBoundsProjectiles();
 	checkProjectileCollision();
 	checkPlayerCollision();
+	adjustPlayerBound();
 	updateBoard();
+	
+	return !endGameFlag;
 }
 
 bool Game::hasCollided(Entity* a, Entity* b) {

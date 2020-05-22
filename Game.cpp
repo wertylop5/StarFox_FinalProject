@@ -365,7 +365,7 @@ bool Game::loop() {
 		bossSpawnFlag = true;
 		bossDestroyedFlag = false;
 		
-		boss = new BossPlayer(0, 0, 1, 5, 1);
+		boss = new BossPlayer(0, 0, 2, 5, 3);
 	}
 	
 	updateBoard();

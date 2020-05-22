@@ -20,6 +20,14 @@ const int FPS = 60;
 const int SECOND = 1000;
 const int REFRESH_TIME = static_cast<int>((1/FPS)*SECOND);
 
+Player p(Game::NUM_ROWS-1, Game::NUM_COLS/2, 1, 1);
+Game g(p);
+LowPowerTicker tester;
+
+void interruptTest() {
+	g.handleShoot();
+}
+
 int main() {
 	printf("~~~~~~~~~~~~~~~~~~~PROGRAM START~~~~~~~~~~~~~~~~~~~\n");
 	
@@ -27,12 +35,15 @@ int main() {
 	LEDMatrix::create_LEDMatrix(PTD2, PTD0, PTD1);
 	#endif
 	
-	Player p(Game::NUM_ROWS-1, Game::NUM_COLS/2, 1);
-	Game g(p);
 	g.init(PTB10);
+	//tester.attach(&interruptTest, 1.0f);
 	
 	while(1) {
-		if (!g.loop()) { break; }
+		if (!g.loop()) {
+			tester.detach();
+			
+			break;
+		}
 		
 		g.clampBoard();
 		
@@ -44,6 +55,8 @@ int main() {
 		
 		ThisThread::sleep_for(REFRESH_TIME);
 	}
+	
+	
 	
 	printf("Game over!\n");
 	

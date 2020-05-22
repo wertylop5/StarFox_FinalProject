@@ -21,6 +21,7 @@ class Obstacle;
 class Game {
 private:
 	static const int MAX_OBSTACLES_PER_SPAWN{ 3 };
+	static const int MISSILE_BUFFER_SIZE = 20;
 	
 	//keeps track of what numbers on the board mean what
 	enum class BoardToken {
@@ -37,12 +38,14 @@ private:
 	
 	/*
 	stores the location of missiles to be spawned
-	
-	invariant: must always contain an even number of elements
-		even indexed elements: x coordinate
-		odd indexed elements: y coordinate
+	column 0 is x, column 1 is y
 	*/
-	std::vector<int> missile_locations;
+	int missileBuffer[MISSILE_BUFFER_SIZE][2];
+	
+	//stores next available position in missile buffer
+	int missileBufferPos;
+	
+	//whether game should end
 	bool endGameFlag;
 	
 	/*
@@ -77,8 +80,10 @@ private:
 	
 	bool isInBounds(Entity *e);
 	
+	//decrease counter for next entity refresh
 	void decrementCounters();
 	
+	//moves projectiles
 	void moveMissiles();
 	void moveObstacles();
 	
@@ -109,7 +114,8 @@ public:
 	*/
 	int clampedBoard[8][8];
 	
-	Game(Player& p): board{ }, player{ p }, endGameFlag{ false }, clampedBoard{ } {};
+	Game(Player& p): board{ }, player{ p }, missileBuffer{ }, missileBufferPos{ 0 },
+		endGameFlag{ false }, clampedBoard{ } {};
 	
 	~Game();
 	
@@ -160,15 +166,3 @@ public:
 #include "Player.h"
 
 #endif
-
-/*
-speed valueS:
-1: every tick
-4: every 4 ticks
-
-everything 1 pixel
-collide once, game over
-
-two threads: game and graphics update
-use mutex and condition variables
-*/

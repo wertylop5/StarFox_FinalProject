@@ -126,10 +126,14 @@ void Game::moveObstacles() {
 
 void Game::addMissiles() {
 	int x, y;
-	while (!missile_locations.size()) {
+	while (missileBufferPos > 0) {
 		//the location on the end is odd
-		y = missile_locations.pop_back();
-		x = missile_locations.pop_back();
+		x = missileBuffer[missileBufferPos-1][0];
+		y = missileBuffer[missileBufferPos-1][1];
+		
+		missileBufferPos--;
+		
+		printf("adding missile at %d, %d\n", x, y);
 		
 		missiles.push_back(new Missile(x, y));
 	}
@@ -256,11 +260,12 @@ bool Game::isObstacleBehind(Missile* m, Obstacle* o) {
 }
 
 void Game::handleShoot() {
-	//Missile *newMissile = player.shoot();
-	
-	//missiles.push_back(newMissile);
-	missile_locations.push_back(player.getPosx()-1);
-	missile_locations.push_back(player.getPosy());
+	if (missileBufferPos < MISSILE_BUFFER_SIZE) {
+		missileBuffer[missileBufferPos][0] = player.getPosx()-1;
+		missileBuffer[missileBufferPos][1] = player.getPosy();
+		
+		missileBufferPos++;
+	}
 }
 
 void Game::spawnObstacles() {

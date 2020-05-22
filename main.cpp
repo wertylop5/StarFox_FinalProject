@@ -43,7 +43,7 @@ int main() {
 	#ifndef GAME_DEBUG
 	LEDMatrix::create_LEDMatrix(PTD2, PTD0, PTD1);
 	Shooter::create_shooter(PTC3, on_shoot);
-	Joystick joystick(PTB3,PTB2,PTB10); // note PTB10 not used
+	Joystick joystick(PTB2, PTB3, PTB11); // note PTB11 not used
     joystick.init();
 	#endif
 	
@@ -51,14 +51,13 @@ int main() {
 	//tester.attach(&interruptTest, 1.0f);
 	
 	while(1) {
-		Direction d = joystick.get_direction();
-		// if d is NE, E, or SE (2, 3, or 4)
-		if(d >= 2 && d <= 4){
-			on_joystick_right();
-		}
-		// if d is SW, W, or NW (6, 7, or 8)
-		else if(d >= 6 && d <= 8){
+		// x idrectoin rangs from 0 to 0.8
+		float x = joystick.GetXValue();
+		if(x <= 0.1){
 			on_joystick_left();
+		}
+		else if(x >= 0.7){
+			on_joystick_right();
 		}
 
 		if (!g.loop()) {

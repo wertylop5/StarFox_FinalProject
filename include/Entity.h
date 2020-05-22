@@ -10,6 +10,9 @@ protected:
 	int posy;
 	int speed;
 	
+	/**
+	hitbox entries are relative to the entity's center (ie, posx, posy)
+	*/
 	std::vector<std::pair<int, int>> hitbox;
 
 public:
@@ -23,6 +26,10 @@ public:
 	int getPosx() { return posx; }
 	int getPosy() { return posy; }
 	int getSpeed() { return speed; }
+	
+	/**
+	returns a const iterator to the start of the hitbox vector
+	*/
 	std::vector<std::pair<int, int>>::const_iterator getHitboxIterator() {
 		return hitbox.begin();
 	}

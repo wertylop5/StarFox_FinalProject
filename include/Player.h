@@ -13,12 +13,6 @@ private:
 public:
 	static const std::string LABEL;
 	
-	//pixels in the hitbox
-	//static const int HITBOX_SIZE = 4;
-	
-	//hitbox points relative to actual center position
-	//const int hitbox[4][2];
-	
 	Player(int x, int y, int s, int h);
 	
 	Player(int x, int y, int s): Player(x, y, s, 3) {}

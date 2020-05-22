@@ -295,11 +295,53 @@ bool Game::loop() {
 }
 
 bool Game::hasCollided(Entity* a, Entity* b) {
-	return a->getPosx() == b->getPosx() && a->getPosy() == b->getPosy();
+	//return a->getPosx() == b->getPosx() && a->getPosy() == b->getPosy();
+	
+	auto ita = a->getHitboxIterator();
+	while (!a->isHitboxIteratorAtEnd(ita)) {
+		auto paira = (*ita);
+		
+		auto itb = b->getHitboxIterator();
+		while (!b->isHitboxIteratorAtEnd(itb)) {
+			auto pairb = (*itb);
+			
+			if (a->getPosx()+paira.first == b->getPosx()+pairb.first &&
+					a->getPosy()+paira.second == b->getPosy()+pairb.second) {
+				return true;
+			}
+			
+			++itb;
+		}
+		
+		++ita;
+	}
+	
+	return false;
 }
 
 bool Game::isObstacleBehind(Missile* m, Obstacle* o) {
-	return m->getPosx() < o->getPosx() && m->getPosy() == o->getPosy();
+	//return m->getPosx() < o->getPosx() && m->getPosy() == o->getPosy();
+	
+	auto itm = m->getHitboxIterator();
+	while (!m->isHitboxIteratorAtEnd(itm)) {
+		auto pairm = (*itm);
+		
+		auto ito = o->getHitboxIterator();
+		while (!o->isHitboxIteratorAtEnd(ito)) {
+			auto pairo = (*ito);
+			
+			if (m->getPosx()+pairm.first < o->getPosx()+pairo.first &&
+					m->getPosy()+pairm.second == o->getPosy()+pairo.second) {
+				return true;
+			}
+			
+			++ito;
+		}
+		
+		++itm;
+	}
+	
+	return false;
 }
 
 void Game::handleShoot() {

@@ -11,9 +11,11 @@ private:
 public:
 	static const std::string LABEL;
 	
-	Missile(int x, int y): Projectile(x, y, 1), durability{ 1 } {};
+	Missile(int x, int y): Projectile(x, y, 1), durability{ 1 } {
+		hitbox.push_back(std::pair<int, int>(0, 0));
+	}
 	
-	virtual ~Missile() {};
+	virtual ~Missile() {}
 	
 	virtual void move() { posx--; }
 	

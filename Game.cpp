@@ -269,18 +269,8 @@ void Game::handleShoot() {
 }
 
 void Game::spawnObstacles() {
-	int numSpawned = 0;
-	
-	for (int y = 0; y < Game::NUM_COLS; y++) {
-		if (numSpawned == Game::MAX_OBSTACLES_PER_SPAWN) break;
-		
-		if (rand() % 2) {
-			numSpawned++;
-			
-			//placeToken(0, y, BoardToken::obstacle);
-			
-			obstacles.push_back(new Obstacle(0, y));
-		}
+	for (int x = 0; x < Game::MAX_OBSTACLES_PER_SPAWN; ++x) {
+		obstacles.push_back(new Obstacle(0, rand() % Game::NUM_COLS));
 	}
 }
 

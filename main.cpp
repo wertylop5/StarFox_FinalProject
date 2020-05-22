@@ -3,7 +3,6 @@
 #include "include/hardware/LEDMatrix.h"
 
 /**
-TODO: figure a different way to spawn missiles (can't do inside an interrupt)
 TODO: change obstacle spawn mechanics to choose a random column
 */
 
@@ -20,7 +19,7 @@ const int FPS = 60;
 const int SECOND = 1000;
 const int REFRESH_TIME = static_cast<int>((1/FPS)*SECOND);
 
-Player p(Game::NUM_ROWS-1, Game::NUM_COLS/2, 1, 1);
+Player p(Game::NUM_ROWS-1, Game::NUM_COLS/2, 1, 3);
 Game g(p);
 LowPowerTicker tester;
 

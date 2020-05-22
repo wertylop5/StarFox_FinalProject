@@ -20,7 +20,7 @@ class Obstacle;
 
 class Game {
 private:
-	static const int MAX_OBSTACLES_PER_SPAWN{ 3 };
+	static const int MAX_OBSTACLES_PER_SPAWN{ 1 };
 	static const int MISSILE_BUFFER_SIZE = 20;
 	
 	//keeps track of what numbers on the board mean what

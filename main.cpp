@@ -3,19 +3,18 @@ define this to enable debug print statements and disable LED matrix printing
 
 comment out to disable debug print statements and enable LED matrix printing
 */
-#define GAME_DEBUG 
+// #define GAME_DEBUG 
 
 #include "mbed.h"
 #include "include/Game.h"
+#include "Sseg.h"
 #include "include/hardware/LEDMatrix.h"
 #include "include/hardware/Shooter.h"
-
-#ifndef GAME_DEBUG
 #include "Joystick.h"
-#endif
+
 
 //change this to control the game's speed
-const int FPS = 30;
+const int FPS = 15;
 
 const int SECOND = 1000;
 const int REFRESH_TIME = static_cast<int>((1/FPS)*SECOND);
@@ -42,9 +41,14 @@ int main() {
 	
 	#ifndef GAME_DEBUG
 	LEDMatrix::create_LEDMatrix(PTD2, PTD0, PTD1);
-	Shooter::create_shooter(PTC3, on_shoot);
+	Shooter::create_shooter(PTD3, on_shoot);
 	Joystick joystick(PTB2, PTB3, PTB11); // note PTB11 not used
     joystick.init();
+	Sseg score(PTA1, PTC3, PTC0, PTC8,
+         PTC1, PTB23, PTC7, PTC9,
+         PTB9, PTA2, PTC2, PTC5);
+	score.setKcommon();
+	score.begin();
 	#endif
 	
 	g.init(PTB10);
@@ -72,7 +76,9 @@ int main() {
 		g.clampBoard();
 		
 		#ifndef GAME_DEBUG
-		LEDMatrix::display(g.clampedBoard);
+		LEDMatrix::display(g.clampedBoard);		
+		score.writeNum4(g.score);
+		score.updateAll();
 		#else
 		g.printBoard();
 		#endif

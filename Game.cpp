@@ -356,8 +356,10 @@ void Game::handleShoot() {
 }
 
 void Game::spawnObstacles() {
-	for (int x = 0; x < Game::MAX_OBSTACLES_PER_SPAWN; ++x) {
-		obstacles.push_back(new Obstacle(0, rand() % Game::NUM_COLS));
+	if(rand() % Game::NUM_ROWS <= 1){	
+		for (int x = 0; x < Game::MAX_OBSTACLES_PER_SPAWN; ++x) {
+			obstacles.push_back(new Obstacle(0, rand() % Game::NUM_COLS));
+		}
 	}
 }
 

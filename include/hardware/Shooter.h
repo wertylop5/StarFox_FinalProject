@@ -33,6 +33,10 @@ class Shooter {
          * @param shoot Handles shooting when button pressed.
          */
         static void create_shooter(PinName button_pin, void (*shoot)());
+        /**
+         * Returns true if user presses button, else false.
+         */
+        static bool is_shooting();
     private:
         /**
          * Hide default constructor so that it cannot be instantiated
@@ -64,11 +68,22 @@ class Shooter {
          * Ticker handler.
          */
         static void ticker_handler();
+        /**
+         * Interrupt object for button.
+         */
         static InterruptIn *button;
         /**
-         *  Button handler.
+         *  Button handler for rising edge.
          */
-        static void button_handler();
+        static void button_rise_handler();
+        /**
+         * Button handler for falling edge.
+         */
+        static void button_fall_handler();
+        /**
+         * Button state.
+         */
+        static bool is_clicked;
 };
 
 #endif

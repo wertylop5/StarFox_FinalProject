@@ -14,15 +14,14 @@ public:
 	static const std::string LABEL;
 	
 	//pixels in the hitbox
-	static const int HITBOX_SIZE = 4;
+	//static const int HITBOX_SIZE = 4;
 	
 	//hitbox points relative to actual center position
-	const int hitbox[4][2];
+	//const int hitbox[4][2];
 	
-	Player(int x, int y, int s, int h): Entity(x, y, s), health{ h },
-		hitbox{ {0, 0}, {-1, 0}, {0, -1}, {0, 1} } {};
+	Player(int x, int y, int s, int h);
 	
-	Player(int x, int y, int s): Player(x, y, s, 3) {};
+	Player(int x, int y, int s): Player(x, y, s, 3) {}
 	
 	/**
 	increments/decrements posy

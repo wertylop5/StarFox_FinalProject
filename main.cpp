@@ -1,15 +1,18 @@
-#include "mbed.h"
-#include "include/Game.h"
-#include "Joystick.h"
-#include "include/hardware/LEDMatrix.h"
-#include "include/hardware/Shooter.h"
-
 /*
 define this to enable debug print statements and disable LED matrix printing
 
 comment out to disable debug print statements and enable LED matrix printing
 */
-// #define GAME_DEBUG 
+#define GAME_DEBUG 
+
+#include "mbed.h"
+#include "include/Game.h"
+#include "include/hardware/LEDMatrix.h"
+#include "include/hardware/Shooter.h"
+
+#ifndef GAME_DEBUG
+#include "Joystick.h"
+#endif
 
 //change this to control the game's speed
 const int FPS = 30;
@@ -49,6 +52,8 @@ int main() {
 	
 	while(1) {
 		// x idrectoin rangs from 0 to 0.8
+		
+		#ifndef GAME_DEBUG
 		float x = joystick.GetXValue();
 		if(x <= 0.1){
 			on_joystick_left();
@@ -56,6 +61,7 @@ int main() {
 		else if(x >= 0.7){
 			on_joystick_right();
 		}
+		#endif
 
 		if (!g.loop()) {
 			tester.detach();

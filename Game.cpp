@@ -95,23 +95,37 @@ void Game::clampBoard() {
 void Game::placeToken(int x, int y, BoardToken token) {
 	switch (token) {
 		case BoardToken::missile: case BoardToken::obstacle:
+		{
 			board[x][y] = static_cast<int>(token);
+		}
 		break;
 		
-		//player is a backwards T shape
+		//player is a flipped T shape
 		//note: center point is guaranteed to be in bounds from adjustPlayerBound()
 		case BoardToken::player:
+		{
 			//board[x][y] = static_cast<int>(token);
-			
+			/*
 			for (int i = 0; i < Player::HITBOX_SIZE; ++i) {
 				if (isInBounds(x+player.hitbox[i][0], y+player.hitbox[i][1])) {
 					board[x+player.hitbox[i][0]][y+player.hitbox[i][1]]
 						= static_cast<int>(token);
 				}
+			}*/
+			auto it = player.getHitboxIterator();
+			while (!player.isHitboxIteratorAtEnd(it)) {
+				auto pair = (*it);
+				
+				if (isInBounds(x+pair.first, y+pair.second)) {
+					board[x+pair.first][y+pair.second] = static_cast<int>(token);
+				}
+				
+				++it;
 			}
+		}
 		break;
 		
-		default:
+		case BoardToken::empty: default:
 		break;
 	}
 	

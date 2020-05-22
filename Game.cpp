@@ -93,12 +93,38 @@ void Game::clampBoard() {
 }
 
 void Game::placeToken(int x, int y, BoardToken token) {
-	board[x][y] = static_cast<int>(token);
+	switch (token) {
+		case BoardToken::missile: case BoardToken::obstacle:
+			board[x][y] = static_cast<int>(token);
+		break;
+		
+		//player is a backwards T shape
+		//note: center point is guaranteed to be in bounds from adjustPlayerBound()
+		case BoardToken::player:
+			//board[x][y] = static_cast<int>(token);
+			
+			for (int i = 0; i < Player::HITBOX_SIZE; ++i) {
+				if (isInBounds(x+player.hitbox[i][0], y+player.hitbox[i][1])) {
+					board[x+player.hitbox[i][0]][y+player.hitbox[i][1]]
+						= static_cast<int>(token);
+				}
+			}
+		break;
+		
+		default:
+		break;
+	}
+	
 }
 
 bool Game::isInBounds(Entity *e) {
 	return e->getPosx() >= 0 && e->getPosx() < Game::NUM_ROWS &&
 			e->getPosy() >= 0 && e->getPosy() < Game::NUM_COLS;
+}
+
+bool Game::isInBounds(int x, int y) {
+	return x >= 0 && x < Game::NUM_ROWS &&
+			y >= 0 && y < Game::NUM_COLS;
 }
 
 void Game::decrementCounters() {
@@ -124,6 +150,7 @@ void Game::moveObstacles() {
 	}
 }
 
+//TODO: check if missile is within bounds
 void Game::addMissiles() {
 	int x, y;
 	while (missileBufferPos > 0) {
@@ -153,10 +180,12 @@ void Game::checkProjectileCollision() {
 			if (hasCollided(m, o) || isObstacleBehind(m, o)) {
 				printf("obstacle hit\r\n");
 				
+				
 				delete o;
 				obstacles.erase(it2);
 				
 				m->lowerDurability();
+				score++;
 			}
 			else { ++it2; }
 			

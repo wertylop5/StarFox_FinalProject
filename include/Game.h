@@ -79,6 +79,7 @@ private:
 	bool isObstacleBehind(Missile* m, Obstacle* o);
 	
 	bool isInBounds(Entity *e);
+	bool isInBounds(int x, int y);
 	
 	//decrease counter for next entity refresh
 	void decrementCounters();
@@ -114,8 +115,13 @@ public:
 	*/
 	int clampedBoard[8][8];
 	
+	/**
+	keeps track of the current score
+	*/
+	int score;
+	
 	Game(Player& p): board{ }, player{ p }, missileBuffer{ }, missileBufferPos{ 0 },
-		endGameFlag{ false }, clampedBoard{ } {};
+		endGameFlag{ false }, clampedBoard{ }, score{ 0 } {};
 	
 	~Game();
 	

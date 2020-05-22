@@ -1,7 +1,6 @@
 #directories
 BUILD/*
 __pycache__/*
-Joystick/*
 mbed-os/*
 .vscode/*
 .hg/*

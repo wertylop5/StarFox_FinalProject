@@ -174,9 +174,11 @@ void Game::addMissiles() {
 		
 		missileBufferPos--;
 		
-		printf("adding missile at %d, %d\n", x, y);
-		
-		missiles.push_back(new Missile(x, y));
+		if (isInBounds(x, y)) {
+			printf("adding missile at %d, %d\n", x, y);
+			
+			missiles.push_back(new Missile(x, y));
+		}
 	}
 }
 

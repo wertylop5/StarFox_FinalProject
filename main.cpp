@@ -3,14 +3,14 @@ define this to enable debug print statements and disable hardware usage
 
 comment out to disable debug print statements and enable hardware usage
 */
-// #define GAME_DEBUG 
+#define GAME_DEBUG 
 
 #include "mbed.h"
 #include "include/Game.h"
 #include "Sseg.h"
 #include "include/hardware/LEDMatrix.h"
 #include "include/hardware/Shooter.h"
-#include "Joystick.h"
+//#include "Joystick.h"
 
 
 //change this to control the game's speed

@@ -53,6 +53,38 @@ void Game::init(PinName seed_pin) {
 	refreshCounters.emplace(Obstacle::LABEL, refreshSpeeds[Obstacle::LABEL]);
 }
 
+bool Game::loop() {
+	printf("looping\r\n");
+	clearBoard();
+	
+	decrementCounters();
+	adjustShipBounds();
+	
+	printf("bossSpawn: %d, bossDestroyed: %d\n", bossSpawnFlag, bossDestroyedFlag);
+	
+	if (bossDestroyedFlag) {
+		destroyBoss();
+	}
+	if (bossSpawnFlag && !bossDestroyedFlag) {
+		updateBoss();
+	}
+	
+	moveProjectiles();
+	removeOutOfBoundsProjectiles();
+	checkProjectileCollision();
+	checkShipCollisions();
+	
+	addMissiles();
+	
+	if (score != 0 && score % BOSS_SPAWN_CONDITION == 0 && !bossSpawnFlag) {
+		spawnBoss();
+	}
+	
+	updateBoard();
+	
+	return !endGameFlag;
+}
+
 void Game::clearBoard() {
 	for (auto it = std::begin(board); it != std::end(board); ++it) { 
 		std::fill(std::begin(*it), std::end(*it), static_cast<int>(BoardToken::empty));
@@ -145,6 +177,12 @@ void Game::placeToken(int x, int y, BoardToken token) {
 	
 }
 
+void Game::adjustShipBounds() {
+	player.adjustPlayerBound(0, Game::NUM_COLS);
+	
+	if (bossSpawnFlag) boss->adjustPlayerBound(0, Game::NUM_COLS);
+}
+
 bool Game::isInBounds(Entity *e) {
 	return e->getPosx() >= 0 && e->getPosx() < Game::NUM_ROWS &&
 			e->getPosy() >= 0 && e->getPosy() < Game::NUM_COLS;
@@ -166,6 +204,22 @@ void Game::decrementCounters() {
 		printf("%s: %d\n", (it->first).c_str(), it->second);
 	}
 	*/
+}
+
+void Game::moveProjectiles() {
+	//0 means ready to refresh
+	if (refreshCounters[Missile::LABEL] == 0) {
+		refreshCounters[Missile::LABEL] = refreshSpeeds[Missile::LABEL];
+		
+		moveMissiles();
+	}
+	if (refreshCounters[Obstacle::LABEL] == 0) {
+		refreshCounters[Obstacle::LABEL] = refreshSpeeds[Obstacle::LABEL];
+		
+		moveObstacles();
+		
+		if (!bossSpawnFlag) spawnObstacles();
+	}
 }
 
 void Game::moveMissiles() {
@@ -307,70 +361,39 @@ void Game::checkPlayerCollision(Player* p) {
 	}
 }
 
-bool Game::loop() {
-	printf("looping\r\n");
-	clearBoard();
-	
-	decrementCounters();
-	//adjustPlayerBound(&player);
-	player.adjustPlayerBound(0, Game::NUM_COLS);
-	
-	if (bossSpawnFlag) boss->adjustPlayerBound(0, Game::NUM_COLS);
-	
-	printf("bossSpawn: %d, bossDestroyed: %d\n", bossSpawnFlag, bossDestroyedFlag);
-	
-	if (bossDestroyedFlag) {
-		printf("removing boss\n");
-		
-		delete boss;
-		boss = 0;
-		
-		bossSpawnFlag = false;
-		bossDestroyedFlag = false;
-	}
-	
-	if (bossSpawnFlag && !bossDestroyedFlag) {
-		if (boss->shouldShoot()) {
-			missiles.push_back(boss->shoot());
-		}
-		
-		boss->move();
-	}
-	
-	//0 means ready to refresh
-	if (refreshCounters[Missile::LABEL] == 0) {
-		refreshCounters[Missile::LABEL] = refreshSpeeds[Missile::LABEL];
-		
-		moveMissiles();
-	}
-	if (refreshCounters[Obstacle::LABEL] == 0) {
-		refreshCounters[Obstacle::LABEL] = refreshSpeeds[Obstacle::LABEL];
-		
-		moveObstacles();
-		
-		if (!bossSpawnFlag) spawnObstacles();
-	}
-	
-	removeOutOfBoundsProjectiles();
-	checkProjectileCollision();
+void Game::checkShipCollisions() {
 	checkPlayerCollision(&player);
 	if (bossSpawnFlag) checkPlayerCollision(boss);
+}
+
+void Game::spawnBoss() {
+	printf("spawning boss\n");
 	
-	addMissiles();
+	bossSpawnFlag = true;
+	bossDestroyedFlag = false;
 	
-	if (score != 0 && score % BOSS_SPAWN_CONDITION == 0 && !bossSpawnFlag) {
-		//spawn the boss
-		printf("spawning boss\n");
-		
-		bossSpawnFlag = true;
-		bossDestroyedFlag = false;
-		
-		boss = new BossPlayer(0, 0, 2, 5, 3);
+	boss = new BossPlayer(0, 0, 1, 1, 300);
+	spawnMissiles();
+}
+
+void Game::destroyBoss() {
+	printf("removing boss\n");
+	
+	score += 11;
+	
+	delete boss;
+	boss = 0;
+	
+	bossSpawnFlag = false;
+	bossDestroyedFlag = false;
+}
+
+void Game::updateBoss() {
+	if (boss->shouldShoot()) {
+		missiles.push_back(boss->shoot());
 	}
 	
-	updateBoard();
-	
-	return !endGameFlag;
+	boss->move();
 }
 
 bool Game::hasCollided(Entity* a, Entity* b) {
@@ -435,7 +458,7 @@ void Game::handleShoot() {
 }
 
 void Game::spawnObstacles() {
-	if(rand() % Game::NUM_ROWS <= 1){	
+	if(rand() % 100 < Game::OBSTACLE_SPAWN_CHANCE){	
 		for (int x = 0; x < Game::MAX_OBSTACLES_PER_SPAWN; ++x) {
 			obstacles.push_back(new Obstacle(0, rand() % Game::NUM_COLS));
 		}
@@ -447,10 +470,3 @@ void Game::spawnMissiles() {
 		missiles.push_back(new Missile(Game::NUM_ROWS-1, y));
 	}
 }
-
-/*
-void Game::adjustPlayerBound(Player* p) {
-	if (p->posy < 0) p->posy = 0;
-	if (p->posy >= Game::NUM_COLS) p->posy = Game::NUM_COLS-1;
-}
-*/

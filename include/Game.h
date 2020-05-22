@@ -24,10 +24,13 @@ private:
 	static const int MISSILE_BUFFER_SIZE = 20;
 	
 	//chance out of 100 for a critical missile (hits 2 obstacles)
-	static const int CRIT_MISSILE_CHANCE = 30;
+	static const int CRIT_MISSILE_CHANCE = 20;
 	
-	//boss will spawn after score % BOSS_SPAWN_CONDITION == 0
+	//boss will spawn after score % BOSS_SPAWN_CONDITION == 0, score != 0
 	static const int BOSS_SPAWN_CONDITION = 10;
+	
+	//chance out of 100 for obstacles to spawn on a row
+	static const int OBSTACLE_SPAWN_CHANCE = 70;
 	
 	//keeps track of what numbers on the board mean what
 	enum class BoardToken {
@@ -90,13 +93,18 @@ private:
 	*/
 	bool isObstacleBehind(Missile* m, Obstacle* o);
 	
+	//keeps player and boss within bounds
+	void adjustShipBounds();
+	
 	bool isInBounds(Entity *e);
 	bool isInBounds(int x, int y);
 	
 	//decrease counter for next entity refresh
 	void decrementCounters();
 	
-	//moves projectiles
+	//moves projectiles if they're ready
+	void moveProjectiles();
+	
 	void moveMissiles();
 	void moveObstacles();
 	
@@ -112,6 +120,17 @@ private:
 	void checkProjectileCollision();
 	void removeOutOfBoundsProjectiles();
 	void checkPlayerCollision(Player* p);
+	
+	//check collisions for player and boss
+	void checkShipCollisions();
+	
+	void spawnBoss();
+	
+	//removes the boss ship
+	void destroyBoss();
+	
+	//moves the boss and has it shoot if it should
+	void updateBoss();
 	
 public:
 	static const int NUM_ROWS{ 8 };

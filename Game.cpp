@@ -31,6 +31,9 @@ Game::~Game() {
 	}
 	missiles.clear();
 	obstacles.clear();
+	
+	if (boss != 0) delete boss;
+	boss = 0;
 }
 
 void Game::init(PinName seed_pin) {
@@ -70,6 +73,10 @@ void Game::updateBoard() {
 	}
 	
 	placeToken(player.getPosx(), player.getPosy(), BoardToken::player);
+	
+	if (bossSpawnFlag) {
+		placeToken(boss->getPosx(), boss->getPosy(), BoardToken::boss);
+	}
 }
 
 void Game::printBoard() {
@@ -100,18 +107,8 @@ void Game::placeToken(int x, int y, BoardToken token) {
 		}
 		break;
 		
-		//player is a flipped T shape
-		//note: center point is guaranteed to be in bounds from adjustPlayerBound()
 		case BoardToken::player:
 		{
-			//board[x][y] = static_cast<int>(token);
-			/*
-			for (int i = 0; i < Player::HITBOX_SIZE; ++i) {
-				if (isInBounds(x+player.hitbox[i][0], y+player.hitbox[i][1])) {
-					board[x+player.hitbox[i][0]][y+player.hitbox[i][1]]
-						= static_cast<int>(token);
-				}
-			}*/
 			auto it = player.getHitboxIterator();
 			while (!player.isHitboxIteratorAtEnd(it)) {
 				auto pair = (*it);
@@ -121,6 +118,23 @@ void Game::placeToken(int x, int y, BoardToken token) {
 				}
 				
 				++it;
+			}
+		}
+		break;
+		
+		case BoardToken::boss:
+		{
+			if (bossSpawnFlag) {
+				auto it = boss->getHitboxIterator();
+				while (!boss->isHitboxIteratorAtEnd(it)) {
+					auto pair = (*it);
+					
+					if (isInBounds(x+pair.first, y+pair.second)) {
+						board[x+pair.first][y+pair.second] = static_cast<int>(token);
+					}
+					
+					++it;
+				}
 			}
 		}
 		break;
@@ -147,9 +161,11 @@ void Game::decrementCounters() {
 	}
 	
 	//print values for debugging
+	/*
 	for (auto it = std::begin(refreshCounters); it != std::end(refreshCounters); ++it) {
 		printf("%s: %d\n", (it->first).c_str(), it->second);
 	}
+	*/
 }
 
 void Game::moveMissiles() {
@@ -164,7 +180,6 @@ void Game::moveObstacles() {
 	}
 }
 
-//TODO: check if missile is within bounds
 void Game::addMissiles() {
 	int x, y;
 	while (missileBufferPos > 0) {
@@ -177,7 +192,9 @@ void Game::addMissiles() {
 		if (isInBounds(x, y)) {
 			printf("adding missile at %d, %d\n", x, y);
 			
-			missiles.push_back(new Missile(x, y));
+			int durability = (rand() % 100 < Game::CRIT_MISSILE_CHANCE) ? 2 : 1;
+			
+			missiles.push_back(new Missile(x, y, durability));
 		}
 	}
 }
@@ -247,25 +264,47 @@ void Game::removeOutOfBoundsProjectiles() {
 	}
 }
 
-void Game::checkPlayerCollision() {
+void Game::checkPlayerCollision(Player* p) {
 	auto it2 = obstacles.begin();
 	while ( it2 != obstacles.end()) {
 		Obstacle *o = *it2;
 		
-		if (hasCollided(&player, o)) {
+		if (hasCollided(p, o)) {
 			printf("player hit\n");
 			
 			delete o;
 			obstacles.erase(it2);
 			
-			player.lowerHealth();
+			p->lowerHealth();
 			
-			if (!player.isAlive()) break;
+			if (!p->isAlive()) break;
 		}
 		else { ++it2; }
 	}
 	
-	if (!player.isAlive()) endGameFlag = true;
+	auto it = missiles.begin();
+	while ( it != missiles.end()) {
+		Missile *m = *it;
+		
+		if (hasCollided(p, m)) {
+			printf("player hit\n");
+			
+			delete m;
+			missiles.erase(it);
+			
+			p->lowerHealth();
+			
+			if (!p->isAlive()) break;
+		}
+		else { ++it; }
+	}
+	
+	if (!p->isAlive()) {
+		if (p == &player) endGameFlag = true;
+		else if (p == boss) {
+			bossDestroyedFlag = true;
+		}
+	}
 }
 
 bool Game::loop() {
@@ -273,8 +312,32 @@ bool Game::loop() {
 	clearBoard();
 	
 	decrementCounters();
-	adjustPlayerBound();
+	//adjustPlayerBound(&player);
+	player.adjustPlayerBound(0, Game::NUM_COLS);
 	
+	if (bossSpawnFlag) boss->adjustPlayerBound(0, Game::NUM_COLS);
+	
+	printf("bossSpawn: %d, bossDestroyed: %d\n", bossSpawnFlag, bossDestroyedFlag);
+	
+	if (bossDestroyedFlag) {
+		printf("removing boss\n");
+		
+		delete boss;
+		boss = 0;
+		
+		bossSpawnFlag = false;
+		bossDestroyedFlag = false;
+	}
+	
+	if (bossSpawnFlag && !bossDestroyedFlag) {
+		if (boss->shouldShoot()) {
+			missiles.push_back(boss->shoot());
+		}
+		
+		boss->move();
+	}
+	
+	//0 means ready to refresh
 	if (refreshCounters[Missile::LABEL] == 0) {
 		refreshCounters[Missile::LABEL] = refreshSpeeds[Missile::LABEL];
 		
@@ -284,21 +347,33 @@ bool Game::loop() {
 		refreshCounters[Obstacle::LABEL] = refreshSpeeds[Obstacle::LABEL];
 		
 		moveObstacles();
-		spawnObstacles();
+		
+		if (!bossSpawnFlag) spawnObstacles();
 	}
 	
 	removeOutOfBoundsProjectiles();
 	checkProjectileCollision();
-	checkPlayerCollision();
+	checkPlayerCollision(&player);
+	if (bossSpawnFlag) checkPlayerCollision(boss);
+	
 	addMissiles();
+	
+	if (score != 0 && score % BOSS_SPAWN_CONDITION == 0 && !bossSpawnFlag) {
+		//spawn the boss
+		printf("spawning boss\n");
+		
+		bossSpawnFlag = true;
+		bossDestroyedFlag = false;
+		
+		boss = new BossPlayer(0, 0, 1, 5, 1);
+	}
+	
 	updateBoard();
 	
 	return !endGameFlag;
 }
 
 bool Game::hasCollided(Entity* a, Entity* b) {
-	//return a->getPosx() == b->getPosx() && a->getPosy() == b->getPosy();
-	
 	auto ita = a->getHitboxIterator();
 	while (!a->isHitboxIteratorAtEnd(ita)) {
 		auto paira = (*ita);
@@ -307,6 +382,7 @@ bool Game::hasCollided(Entity* a, Entity* b) {
 		while (!b->isHitboxIteratorAtEnd(itb)) {
 			auto pairb = (*itb);
 			
+			//remember that hitbox gives an offset from center
 			if (a->getPosx()+paira.first == b->getPosx()+pairb.first &&
 					a->getPosy()+paira.second == b->getPosy()+pairb.second) {
 				return true;
@@ -322,8 +398,6 @@ bool Game::hasCollided(Entity* a, Entity* b) {
 }
 
 bool Game::isObstacleBehind(Missile* m, Obstacle* o) {
-	//return m->getPosx() < o->getPosx() && m->getPosy() == o->getPosy();
-	
 	auto itm = m->getHitboxIterator();
 	while (!m->isHitboxIteratorAtEnd(itm)) {
 		auto pairm = (*itm);
@@ -332,6 +406,7 @@ bool Game::isObstacleBehind(Missile* m, Obstacle* o) {
 		while (!o->isHitboxIteratorAtEnd(ito)) {
 			auto pairo = (*ito);
 			
+			//remember that hitbox gives an offset from center
 			if (m->getPosx()+pairm.first < o->getPosx()+pairo.first &&
 					m->getPosy()+pairm.second == o->getPosy()+pairo.second) {
 				return true;
@@ -347,6 +422,10 @@ bool Game::isObstacleBehind(Missile* m, Obstacle* o) {
 }
 
 void Game::handleShoot() {
+	/*
+	this function is necessary because using the "new" keyword is
+	not allowed in an ISR
+	*/
 	if (missileBufferPos < MISSILE_BUFFER_SIZE) {
 		missileBuffer[missileBufferPos][0] = player.getPosx()-1;
 		missileBuffer[missileBufferPos][1] = player.getPosy();
@@ -366,11 +445,12 @@ void Game::spawnObstacles() {
 void Game::spawnMissiles() {
 	for (int y = 0; y < Game::NUM_COLS; ++y) {
 		missiles.push_back(new Missile(Game::NUM_ROWS-1, y));
-		//placeToken(Game::NUM_ROWS-1, y, BoardToken::missile);
 	}
 }
 
-void Game::adjustPlayerBound() {
-	if (player.posy < 0) player.posy = 0;
-	if (player.posy >= Game::NUM_COLS) player.posy = Game::NUM_COLS-1;
+/*
+void Game::adjustPlayerBound(Player* p) {
+	if (p->posy < 0) p->posy = 0;
+	if (p->posy >= Game::NUM_COLS) p->posy = Game::NUM_COLS-1;
 }
+*/

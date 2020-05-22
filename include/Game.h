@@ -9,7 +9,7 @@
 #include "Missile.h"
 #include "Obstacle.h"
 #include "Projectile.h"
-
+#include "BossPlayer.h"
 
 #include "mbed_mem_trace.h"
 void print_memory_info();
@@ -23,16 +23,24 @@ private:
 	static const int MAX_OBSTACLES_PER_SPAWN{ 1 };
 	static const int MISSILE_BUFFER_SIZE = 20;
 	
+	//chance out of 100 for a critical missile (hits 2 obstacles)
+	static const int CRIT_MISSILE_CHANCE = 30;
+	
+	//boss will spawn after score % BOSS_SPAWN_CONDITION == 0
+	static const int BOSS_SPAWN_CONDITION = 10;
+	
 	//keeps track of what numbers on the board mean what
 	enum class BoardToken {
 		empty,
 		player,
 		obstacle,
-		missile
+		missile,
+		boss
 	};
 	
 	int board[8][8];
 	Player& player;
+	BossPlayer* boss;
 	std::vector<Missile*> missiles;
 	std::vector<Obstacle*> obstacles;
 	
@@ -47,6 +55,10 @@ private:
 	
 	//whether game should end
 	bool endGameFlag;
+	
+	//controls the boss level
+	bool bossSpawnFlag;
+	bool bossDestroyedFlag;
 	
 	/*
 	keeps track of where each class is in its refresh cycle
@@ -99,7 +111,7 @@ private:
 	*/
 	void checkProjectileCollision();
 	void removeOutOfBoundsProjectiles();
-	void checkPlayerCollision();
+	void checkPlayerCollision(Player* p);
 	
 public:
 	static const int NUM_ROWS{ 8 };
@@ -120,8 +132,9 @@ public:
 	*/
 	int score;
 	
-	Game(Player& p): board{ }, player{ p }, missileBuffer{ }, missileBufferPos{ 0 },
-		endGameFlag{ false }, clampedBoard{ }, score{ 0 } {};
+	Game(Player& p): board{ }, player{ p }, boss{ 0 }, missileBuffer{ }, missileBufferPos{ 0 },
+		endGameFlag{ false }, bossSpawnFlag{ false }, bossDestroyedFlag{ false },
+		clampedBoard{ }, score{ 10 } {}
 	
 	~Game();
 	
@@ -166,9 +179,9 @@ public:
 	/**
 	Adjust player position so that they are within board bounds
 	*/
-	void adjustPlayerBound();
+	//void adjustPlayerBound(Player* p);
 };
 
-#include "Player.h"
+//#include "Player.h"
 
 #endif

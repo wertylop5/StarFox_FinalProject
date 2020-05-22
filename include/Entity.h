@@ -17,7 +17,7 @@ protected:
 
 public:
 	Entity(int x, int y, int s)
-		: posx{ x }, posy{ y }, speed{ s }  {};
+		: posx{ x }, posy{ y }, speed{ s } {};
 	
 	Entity(): Entity(0, 0, 1) {};
 	

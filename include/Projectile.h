@@ -4,6 +4,10 @@
 #include <string>
 #include "Entity.h"
 
+/**
+
+*/
+
 class Projectile: public Entity {
 protected:
 	int directionx = 0;

@@ -9,7 +9,7 @@
 #include "Missile.h"
 #include "Obstacle.h"
 #include "Projectile.h"
-
+#include "BossPlayer.h"
 
 #include "mbed_mem_trace.h"
 void print_memory_info();
@@ -34,11 +34,13 @@ private:
 		empty,
 		player,
 		obstacle,
-		missile
+		missile,
+		boss
 	};
 	
 	int board[8][8];
 	Player& player;
+	BossPlayer* boss;
 	std::vector<Missile*> missiles;
 	std::vector<Obstacle*> obstacles;
 	
@@ -109,7 +111,7 @@ private:
 	*/
 	void checkProjectileCollision();
 	void removeOutOfBoundsProjectiles();
-	void checkPlayerCollision();
+	void checkPlayerCollision(Player* p);
 	
 public:
 	static const int NUM_ROWS{ 8 };
@@ -130,9 +132,9 @@ public:
 	*/
 	int score;
 	
-	Game(Player& p): board{ }, player{ p }, missileBuffer{ }, missileBufferPos{ 0 },
+	Game(Player& p): board{ }, player{ p }, boss{ 0 }, missileBuffer{ }, missileBufferPos{ 0 },
 		endGameFlag{ false }, bossSpawnFlag{ false }, bossDestroyedFlag{ false },
-		clampedBoard{ }, score{ 0 } {}
+		clampedBoard{ }, score{ 10 } {}
 	
 	~Game();
 	
@@ -177,9 +179,9 @@ public:
 	/**
 	Adjust player position so that they are within board bounds
 	*/
-	void adjustPlayerBound();
+	//void adjustPlayerBound(Player* p);
 };
 
-#include "Player.h"
+//#include "Player.h"
 
 #endif

@@ -31,6 +31,9 @@ Game::~Game() {
 	}
 	missiles.clear();
 	obstacles.clear();
+	
+	if (boss != 0) delete boss;
+	boss = 0;
 }
 
 void Game::init(PinName seed_pin) {
@@ -70,6 +73,10 @@ void Game::updateBoard() {
 	}
 	
 	placeToken(player.getPosx(), player.getPosy(), BoardToken::player);
+	
+	if (bossSpawnFlag) {
+		placeToken(boss->getPosx(), boss->getPosy(), BoardToken::boss);
+	}
 }
 
 void Game::printBoard() {
@@ -115,6 +122,23 @@ void Game::placeToken(int x, int y, BoardToken token) {
 		}
 		break;
 		
+		case BoardToken::boss:
+		{
+			if (bossSpawnFlag) {
+				auto it = boss->getHitboxIterator();
+				while (!boss->isHitboxIteratorAtEnd(it)) {
+					auto pair = (*it);
+					
+					if (isInBounds(x+pair.first, y+pair.second)) {
+						board[x+pair.first][y+pair.second] = static_cast<int>(token);
+					}
+					
+					++it;
+				}
+			}
+		}
+		break;
+		
 		case BoardToken::empty: default:
 		break;
 	}
@@ -137,9 +161,11 @@ void Game::decrementCounters() {
 	}
 	
 	//print values for debugging
+	/*
 	for (auto it = std::begin(refreshCounters); it != std::end(refreshCounters); ++it) {
 		printf("%s: %d\n", (it->first).c_str(), it->second);
 	}
+	*/
 }
 
 void Game::moveMissiles() {
@@ -154,7 +180,6 @@ void Game::moveObstacles() {
 	}
 }
 
-//TODO: check if missile is within bounds
 void Game::addMissiles() {
 	int x, y;
 	while (missileBufferPos > 0) {
@@ -239,25 +264,47 @@ void Game::removeOutOfBoundsProjectiles() {
 	}
 }
 
-void Game::checkPlayerCollision() {
+void Game::checkPlayerCollision(Player* p) {
 	auto it2 = obstacles.begin();
 	while ( it2 != obstacles.end()) {
 		Obstacle *o = *it2;
 		
-		if (hasCollided(&player, o)) {
+		if (hasCollided(p, o)) {
 			printf("player hit\n");
 			
 			delete o;
 			obstacles.erase(it2);
 			
-			player.lowerHealth();
+			p->lowerHealth();
 			
-			if (!player.isAlive()) break;
+			if (!p->isAlive()) break;
 		}
 		else { ++it2; }
 	}
 	
-	if (!player.isAlive()) endGameFlag = true;
+	auto it = missiles.begin();
+	while ( it != missiles.end()) {
+		Missile *m = *it;
+		
+		if (hasCollided(p, m)) {
+			printf("player hit\n");
+			
+			delete m;
+			missiles.erase(it);
+			
+			p->lowerHealth();
+			
+			if (!p->isAlive()) break;
+		}
+		else { ++it; }
+	}
+	
+	if (!p->isAlive()) {
+		if (p == &player) endGameFlag = true;
+		else if (p == boss) {
+			bossDestroyedFlag = true;
+		}
+	}
 }
 
 bool Game::loop() {
@@ -265,7 +312,30 @@ bool Game::loop() {
 	clearBoard();
 	
 	decrementCounters();
-	adjustPlayerBound();
+	//adjustPlayerBound(&player);
+	player.adjustPlayerBound(0, Game::NUM_COLS);
+	
+	if (bossSpawnFlag) boss->adjustPlayerBound(0, Game::NUM_COLS);
+	
+	printf("bossSpawn: %d, bossDestroyed: %d\n", bossSpawnFlag, bossDestroyedFlag);
+	
+	if (bossDestroyedFlag) {
+		printf("removing boss\n");
+		
+		delete boss;
+		boss = 0;
+		
+		bossSpawnFlag = false;
+		bossDestroyedFlag = false;
+	}
+	
+	if (bossSpawnFlag && !bossDestroyedFlag) {
+		if (boss->shouldShoot()) {
+			missiles.push_back(boss->shoot());
+		}
+		
+		boss->move();
+	}
 	
 	//0 means ready to refresh
 	if (refreshCounters[Missile::LABEL] == 0) {
@@ -277,18 +347,25 @@ bool Game::loop() {
 		refreshCounters[Obstacle::LABEL] = refreshSpeeds[Obstacle::LABEL];
 		
 		moveObstacles();
-		spawnObstacles();
+		
+		if (!bossSpawnFlag) spawnObstacles();
 	}
 	
 	removeOutOfBoundsProjectiles();
 	checkProjectileCollision();
-	checkPlayerCollision();
+	checkPlayerCollision(&player);
+	if (bossSpawnFlag) checkPlayerCollision(boss);
+	
 	addMissiles();
 	
-	if (score % BOSS_SPAWN_CONDITION == 0) {
-		//spawn the boss on the next frame
+	if (score != 0 && score % BOSS_SPAWN_CONDITION == 0 && !bossSpawnFlag) {
+		//spawn the boss
+		printf("spawning boss\n");
+		
 		bossSpawnFlag = true;
 		bossDestroyedFlag = false;
+		
+		boss = new BossPlayer(0, 0, 1, 5, 1);
 	}
 	
 	updateBoard();
@@ -369,7 +446,9 @@ void Game::spawnMissiles() {
 	}
 }
 
-void Game::adjustPlayerBound() {
-	if (player.posy < 0) player.posy = 0;
-	if (player.posy >= Game::NUM_COLS) player.posy = Game::NUM_COLS-1;
+/*
+void Game::adjustPlayerBound(Player* p) {
+	if (p->posy < 0) p->posy = 0;
+	if (p->posy >= Game::NUM_COLS) p->posy = Game::NUM_COLS-1;
 }
+*/

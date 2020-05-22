@@ -16,5 +16,10 @@ Player::Player(int x, int y, int s, int h): Entity(x, y, s), health{ h } {
 }
 
 Missile* Player::shoot() {
-	return new Missile(posx-1, posy);
+	return new Missile(posx-2, posy);
+}
+
+void Player::adjustPlayerBound(int yBoundLo, int yBoundHi) {
+	if (posy < yBoundLo) posy = yBoundLo;
+	if (posy >= yBoundHi) posy = yBoundHi-1;
 }

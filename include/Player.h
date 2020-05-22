@@ -22,20 +22,21 @@ public:
 	/**
 	increments/decrements posy
 	*/
-	virtual void moveRight() { posy += speed; }
-	virtual void moveLeft() { posy -= speed; }
+	void moveRight() { posy += speed; }
+	void moveLeft() { posy -= speed; }
 	
 	/**
 	spawns a new missile
 	*/
-	Missile* shoot();
+	virtual Missile* shoot();
 	
 	void lowerHealth() { health--; }
 	void increaseHealth() { health++; }
 	
 	bool isAlive() { return health > 0; }
 	
-	friend void Game::adjustPlayerBound();
+	//friend void Game::adjustPlayerBound(Player* p);
+	void adjustPlayerBound(int yBoundLo, int yBoundHi);
 };
 
 #endif

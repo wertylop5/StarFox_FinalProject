@@ -17,11 +17,13 @@ public:
 	
 	Player(int x, int y, int s): Player(x, y, s, 3) {}
 	
+	virtual ~Player() {}
+	
 	/**
 	increments/decrements posy
 	*/
-	void moveRight() { posy += 1; }
-	void moveLeft() { posy -= 1; }
+	virtual void moveRight() { posy += speed; }
+	virtual void moveLeft() { posy -= speed; }
 	
 	/**
 	spawns a new missile

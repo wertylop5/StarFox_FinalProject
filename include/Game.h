@@ -23,6 +23,12 @@ private:
 	static const int MAX_OBSTACLES_PER_SPAWN{ 3 };
 	static const int MISSILE_BUFFER_SIZE = 20;
 	
+	//chance out of 100 for a critical missile (hits 2 obstacles)
+	static const int CRIT_MISSILE_CHANCE = 30;
+	
+	//boss will spawn after score % BOSS_SPAWN_CONDITION == 0
+	static const int BOSS_SPAWN_CONDITION = 10;
+	
 	//keeps track of what numbers on the board mean what
 	enum class BoardToken {
 		empty,
@@ -47,6 +53,10 @@ private:
 	
 	//whether game should end
 	bool endGameFlag;
+	
+	//controls the boss level
+	bool bossSpawnFlag;
+	bool bossDestroyedFlag;
 	
 	/*
 	keeps track of where each class is in its refresh cycle
@@ -121,7 +131,8 @@ public:
 	int score;
 	
 	Game(Player& p): board{ }, player{ p }, missileBuffer{ }, missileBufferPos{ 0 },
-		endGameFlag{ false }, clampedBoard{ }, score{ 0 } {};
+		endGameFlag{ false }, bossSpawnFlag{ false }, bossDestroyedFlag{ false },
+		clampedBoard{ }, score{ 0 } {}
 	
 	~Game();
 	

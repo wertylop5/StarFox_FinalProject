@@ -1,7 +1,7 @@
 /*
-define this to enable debug print statements and disable LED matrix printing
+define this to enable debug print statements and disable hardware usage
 
-comment out to disable debug print statements and enable LED matrix printing
+comment out to disable debug print statements and enable hardware usage
 */
 #define GAME_DEBUG 
 

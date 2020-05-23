@@ -57,8 +57,8 @@ int main() {
 	
 	#ifndef GAME_DEBUG
 	LEDMatrix::create_LEDMatrix(PTD2, PTD0, PTD1);
-	Button shooter(PTD3, on_shoot);
-	Button supershooter(PTB19, on_super_shoot);
+	Button shooter(PTB19, on_shoot);
+	Button supershooter(PTD3, on_super_shoot);
 	Joystick joystick(PTB2, PTB3, PTB11); // note PTB11 not used
     joystick.init();
 	score.begin();

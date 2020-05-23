@@ -21,16 +21,16 @@ class Obstacle;
 class Game {
 private:
 	static const int MAX_OBSTACLES_PER_SPAWN{ 1 };
-	static const int MISSILE_BUFFER_SIZE = 20;
+	static const int MISSILE_BUFFER_SIZE{ 20 };
 	
 	//chance out of 100 for a critical missile (hits 2 obstacles)
-	static const int CRIT_MISSILE_CHANCE = 20;
+	static const int CRIT_MISSILE_CHANCE{ 20 };
 	
 	//boss will spawn after score % BOSS_SPAWN_CONDITION == 0, score != 0
-	static const int BOSS_SPAWN_CONDITION = 10;
+	static const int BOSS_SPAWN_CONDITION{ 10 };
 	
 	//chance out of 100 for obstacles to spawn on a row
-	static const int OBSTACLE_SPAWN_CHANCE = 70;
+	static const int OBSTACLE_SPAWN_CHANCE{ 70 };
 	
 	//keeps track of what numbers on the board mean what
 	enum class BoardToken {
@@ -151,6 +151,9 @@ public:
 	*/
 	int score;
 	
+	/**
+	p is a Player object for the game to keep track of
+	*/
 	Game(Player& p): board{ }, player{ p }, boss{ 0 }, missileBuffer{ }, missileBufferPos{ 0 },
 		endGameFlag{ false }, bossSpawnFlag{ false }, bossDestroyedFlag{ false },
 		clampedBoard{ }, score{ 0 } {}
@@ -194,13 +197,6 @@ public:
 	test function, spawns a bunch of missiles
 	*/
 	void spawnMissiles();
-	
-	/**
-	Adjust player position so that they are within board bounds
-	*/
-	//void adjustPlayerBound(Player* p);
 };
-
-//#include "Player.h"
 
 #endif

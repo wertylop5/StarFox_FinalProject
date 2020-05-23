@@ -22,7 +22,6 @@ const int REFRESH_TIME = static_cast<int>((1/FPS)*SECOND);
 Player p(Game::NUM_ROWS-1, Game::NUM_COLS/2, 1, 3);
 //Player p(Game::NUM_ROWS-1, 7, 1, 1);
 Game g(p);
-LowPowerTicker tester;
 
 void on_shoot() {
 	g.handleShoot();
@@ -67,11 +66,7 @@ int main() {
 		}
 		#endif
 
-		if (!g.loop()) {
-			tester.detach();
-			
-			break;
-		}
+		if (!g.loop()) { break; }
 		
 		g.clampBoard();
 		

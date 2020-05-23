@@ -78,7 +78,6 @@ bool Game::loop() {
 	
 	if (score != 0 && score % BOSS_SPAWN_CONDITION == 0 && !bossSpawnFlag) {
 		spawnBoss();
-		//spawnMissiles();
 	}
 	
 	updateBoard();
@@ -198,13 +197,6 @@ void Game::decrementCounters() {
 	for (auto it = std::begin(refreshCounters); it != std::end(refreshCounters); ++it) {
 		refreshCounters[it->first] -= 1;
 	}
-	
-	//print values for debugging
-	/*
-	for (auto it = std::begin(refreshCounters); it != std::end(refreshCounters); ++it) {
-		printf("%s: %d\n", (it->first).c_str(), it->second);
-	}
-	*/
 }
 
 void Game::moveProjectiles() {
@@ -379,6 +371,7 @@ void Game::spawnBoss() {
 void Game::destroyBoss() {
 	printf("removing boss\n");
 	
+	//+ 1 is avoid immediately respawning the boss 
 	score += Game::BOSS_SPAWN_CONDITION + 1;
 	
 	delete boss;
@@ -448,6 +441,8 @@ void Game::handleShoot() {
 	/*
 	this function is necessary because using the "new" keyword is
 	not allowed in an ISR
+	
+	we use a C-style array because using STL is also not allowed
 	*/
 	if (missileBufferPos < MISSILE_BUFFER_SIZE) {
 		missileBuffer[missileBufferPos][0] = player.getPosx()-1;

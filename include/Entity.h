@@ -16,6 +16,11 @@ protected:
 	std::vector<std::pair<int, int>> hitbox;
 
 public:
+	/**
+	x: the row to start at
+	y: the column to start at
+	s: the entity's speed (how much to move in an update/move command)
+	*/
 	Entity(int x, int y, int s)
 		: posx{ x }, posy{ y }, speed{ s } {};
 	
@@ -29,11 +34,17 @@ public:
 	
 	/**
 	returns a const iterator to the start of the hitbox vector
+	
+	this is acts as a getter for the private variable without granting write
+	access to it
 	*/
 	std::vector<std::pair<int, int>>::const_iterator getHitboxIterator() {
 		return hitbox.begin();
 	}
 	
+	/**
+	whether the given iterator is at the end of the hitbox vector
+	*/
 	bool isHitboxIteratorAtEnd(std::vector<std::pair<int, int>>::const_iterator it) {
 		return it == hitbox.end();
 	}

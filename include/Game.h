@@ -27,7 +27,7 @@ private:
 	static const int CRIT_MISSILE_CHANCE = 20;
 	
 	//boss will spawn after score % BOSS_SPAWN_CONDITION == 0, score != 0
-	static const int BOSS_SPAWN_CONDITION = 10;
+	static const int BOSS_SPAWN_CONDITION = 5;
 	
 	//chance out of 100 for obstacles to spawn on a row
 	static const int OBSTACLE_SPAWN_CHANCE = 70;

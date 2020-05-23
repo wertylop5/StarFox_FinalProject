@@ -78,6 +78,7 @@ bool Game::loop() {
 	
 	if (score != 0 && score % BOSS_SPAWN_CONDITION == 0 && !bossSpawnFlag) {
 		spawnBoss();
+		//spawnMissiles();
 	}
 	
 	updateBoard();
@@ -372,14 +373,13 @@ void Game::spawnBoss() {
 	bossSpawnFlag = true;
 	bossDestroyedFlag = false;
 	
-	boss = new BossPlayer(0, 0, 1, 1, 300);
-	spawnMissiles();
+	boss = new BossPlayer(0, 0, 1, 5, 6);
 }
 
 void Game::destroyBoss() {
 	printf("removing boss\n");
 	
-	score += 11;
+	score += Game::BOSS_SPAWN_CONDITION + 1;
 	
 	delete boss;
 	boss = 0;

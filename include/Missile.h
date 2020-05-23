@@ -19,8 +19,6 @@ public:
 	
 	virtual ~Missile() {}
 	
-	virtual void move() { posx += directionx; }
-	
 	/**
 	if the missile collided with an object
 	*/

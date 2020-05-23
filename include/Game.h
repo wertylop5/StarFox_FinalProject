@@ -27,7 +27,7 @@ private:
 	static const int CRIT_MISSILE_CHANCE = 20;
 	
 	//boss will spawn after score % BOSS_SPAWN_CONDITION == 0, score != 0
-	static const int BOSS_SPAWN_CONDITION = 5;
+	static const int BOSS_SPAWN_CONDITION = 10;
 	
 	//chance out of 100 for obstacles to spawn on a row
 	static const int OBSTACLE_SPAWN_CHANCE = 70;
@@ -153,7 +153,7 @@ public:
 	
 	Game(Player& p): board{ }, player{ p }, boss{ 0 }, missileBuffer{ }, missileBufferPos{ 0 },
 		endGameFlag{ false }, bossSpawnFlag{ false }, bossDestroyedFlag{ false },
-		clampedBoard{ }, score{ 10 } {}
+		clampedBoard{ }, score{ 0 } {}
 	
 	~Game();
 	

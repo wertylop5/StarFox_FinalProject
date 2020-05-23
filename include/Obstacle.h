@@ -11,8 +11,6 @@ public:
 	Obstacle(int x, int y);
 	
 	virtual ~Obstacle() {}
-	
-	virtual void move() { posx += directionx; }
 };
 
 #endif

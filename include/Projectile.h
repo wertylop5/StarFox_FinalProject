@@ -25,7 +25,7 @@ public:
 	
 	virtual ~Projectile() {}
 	
-	virtual void move() {}
+	void move() { posx += directionx; }
 };
 
 #endif

@@ -90,8 +90,6 @@ int main() {
 		ThisThread::sleep_for(REFRESH_TIME);
 	}
 	
-	
-	
 	printf("Game over!\n");
 	
 	return 0;

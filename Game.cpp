@@ -237,7 +237,7 @@ void Game::addMissiles() {
 		missileBufferPos--;
 		
 		if (isInBounds(x, y)) {
-			printf("adding missile at %d, %d\n", x, y);
+			//printf("adding missile at %d, %d\n", x, y);
 			
 			int durability = (rand() % 100 < Game::CRIT_MISSILE_CHANCE) ? 2 : 1;
 			
@@ -437,7 +437,7 @@ bool Game::isObstacleBehind(Missile* m, Obstacle* o) {
 	return false;
 }
 
-void Game::handleShoot() {
+void Game::addToMissileBuffer(int x, int y) {
 	/*
 	this function is necessary because using the "new" keyword is
 	not allowed in an ISR
@@ -445,10 +445,34 @@ void Game::handleShoot() {
 	we use a C-style array because using STL is also not allowed
 	*/
 	if (missileBufferPos < MISSILE_BUFFER_SIZE) {
-		missileBuffer[missileBufferPos][0] = player.getPosx()-1;
-		missileBuffer[missileBufferPos][1] = player.getPosy();
+		missileBuffer[missileBufferPos][0] = x;
+		missileBuffer[missileBufferPos][1] = y;
 		
 		missileBufferPos++;
+	}
+}
+
+void Game::handleShoot() {
+	/*
+	player.getPosx()-1 is technically inside of the player, but we use it because
+	addMissiles() is called after moveProjectiles(), so this new missile will display
+	correctly on the next frame
+	*/
+	addToMissileBuffer(player.getPosx()-1, player.getPosy());
+}
+
+void Game::handleSuper() {
+	/*
+	player.getPosx()-1 is technically inside of the player, but we use it because
+	addMissiles() is called after moveProjectiles(), so this new missile will display
+	correctly on the next frame
+	*/
+	if (score >= Game::BOSS_SPAWN_CONDITION) {
+		for (int y = 0; y < Game::NUM_COLS; ++y) {
+			addToMissileBuffer(player.getPosx()-1, y);
+		}
+		
+		score -= Game::BOSS_SPAWN_CONDITION;
 	}
 }
 
@@ -462,6 +486,6 @@ void Game::spawnObstacles() {
 
 void Game::spawnMissiles() {
 	for (int y = 0; y < Game::NUM_COLS; ++y) {
-		missiles.push_back(new Missile(Game::NUM_ROWS-1, y));
+		missiles.push_back(new Missile(Game::NUM_ROWS-2, y));
 	}
 }

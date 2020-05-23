@@ -44,6 +44,7 @@ public:
 	
 	void lowerHealth() { health--; }
 	void increaseHealth() { health++; }
+	int getHealth() { return health; }
 	
 	bool isAlive() { return health > 0; }
 	

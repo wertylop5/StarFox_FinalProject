@@ -6,6 +6,7 @@
 
 class Missile: public Projectile {
 private:
+	//how many obstacles missile can hit before being destroyed
 	int durability;
 
 public:

@@ -21,7 +21,7 @@ class Obstacle;
 class Game {
 private:
 	static const int MAX_OBSTACLES_PER_SPAWN{ 1 };
-	static const int MISSILE_BUFFER_SIZE{ 20 };
+	static const int MISSILE_BUFFER_SIZE{ 30 };
 	
 	//chance out of 100 for a critical missile (hits 2 obstacles)
 	static const int CRIT_MISSILE_CHANCE{ 20 };
@@ -114,6 +114,9 @@ private:
 	*/
 	void addMissiles();
 	
+	//helper function to write to the missile buffer
+	void addToMissileBuffer(int x, int y);
+	
 	/*
 	runs checks on all projectiles to see if any have collided
 	*/
@@ -194,7 +197,14 @@ public:
 	void handleShoot();
 	
 	/**
-	test function, spawns a bunch of missiles
+	handles the super move, which spawns missiles along a whole row
+	
+	super moves can only be used once the score has reached a certain threshold
+	*/
+	void handleSuper();
+	
+	/**
+	spawns a bunch of missiles along a whole row
 	*/
 	void spawnMissiles();
 };

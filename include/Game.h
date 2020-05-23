@@ -200,6 +200,7 @@ public:
 	handles the super move, which spawns missiles along a whole row
 	
 	super moves can only be used once the score has reached a certain threshold
+	(currently, when it is >= BOSS_SPAWN_CONDITION)
 	*/
 	void handleSuper();
 	

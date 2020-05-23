@@ -1,19 +1,19 @@
-#ifndef SHOOTER_H
-#define SHOOTER_H
+#ifndef BUTTON_H
+#define BUTTON_H
 
 #include "mbed.h"
 
 /**
 #include "mbed.h"
 #include "include/Game.h"
-#include "include/hardware/Shooter.h"
+#include "include/hardware/Button.h"
 
 DigitalOut x(LED1);
 void toggle(){
 	x = !x;
 }
 int main() {
-	Shooter::create_shooter(PTC6, toggle);
+	Button b(PTC6, toggle);
     while(1){
         //do stuff
 	}
@@ -24,7 +24,7 @@ int main() {
 // This delay sets minimum time between clicks in millis.
 #define DEBOUNCE_DELAY 15
 
-class Shooter {
+class Button {
     public:
         /**
          * Create a debounced button for shooting.
@@ -32,58 +32,48 @@ class Shooter {
          * @param button_pin Button pin on board.
          * @param shoot Handles shooting when button pressed.
          */
-        static void create_shooter(PinName button_pin, void (*shoot)());
+        Button(PinName button_pin, void (*shoot)());
         /**
          * Returns true if user presses button, else false.
          */
-        static bool is_shooting();
+        bool is_shooting();
     private:
-        /**
-         * Hide default constructor so that it cannot be instantiated
-         * using it.
-         */
-        Shooter();
-        /**
-         * Keeps track of number of shooters created.
-         * Note: can only be zero or one.
-         */
-        static int count;
         /**
          * Shooting handler.
          */
-        static void (*shoot)();
+        void (*shoot)();
         /**
          * Keeps track of current time. (in millis)
          */
-        static int time;
+        int time;
         /**
          * Keeps track of last time button was pressed. (in millis)
          */
-        static int prev_time;
+        int prev_time;
         /**
          * mBed object to increment time.
          */
-        static Ticker ticker;
+        Ticker ticker;
         /**
          * Ticker handler.
          */
-        static void ticker_handler();
+        void ticker_handler();
         /**
          * Interrupt object for button.
          */
-        static InterruptIn *button;
+        InterruptIn *button;
         /**
          *  Button handler for rising edge.
          */
-        static void button_rise_handler();
+        void button_rise_handler();
         /**
          * Button handler for falling edge.
          */
-        static void button_fall_handler();
+        void button_fall_handler();
         /**
          * Button state.
          */
-        static bool is_clicked;
+        bool is_clicked;
 };
 
 #endif

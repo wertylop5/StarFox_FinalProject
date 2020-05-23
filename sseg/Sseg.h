@@ -347,10 +347,6 @@ public:
      * Update LED Once with 1ms delay
      */
      void updateOnce(void);
-     /**
-      * Update all digits in display.
-      */
-     void updateAll();
 };
 
 #endif  // SSEG.h

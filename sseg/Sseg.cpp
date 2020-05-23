@@ -340,20 +340,9 @@ void Sseg::updateOnce(void) {
     for (i = 0 ; i < _numOfDigs ; i++) {
         updateSeg();
         turnOn();
-        wait(0.001f); // wait 1ms
+        ThisThread::sleep_for(1);
         turnOff();
     }
 }
 
-void Sseg::updateAll(){
-    uint8_t i;
-    _dig = _numOfDigs - 1;
-    turnOff();
-    for (i = 0 ; i < _numOfDigs ; i++) {
-        turnOff();
-        updateSeg();
-        turnOn();
-        wait(0.001f);
-    }
-}
 // EOF

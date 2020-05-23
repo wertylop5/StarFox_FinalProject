@@ -78,7 +78,6 @@ bool Game::loop() {
 	
 	if (score != 0 && score % BOSS_SPAWN_CONDITION == 0 && !bossSpawnFlag) {
 		spawnBoss();
-		//spawnMissiles();
 	}
 	
 	updateBoard();
@@ -198,13 +197,6 @@ void Game::decrementCounters() {
 	for (auto it = std::begin(refreshCounters); it != std::end(refreshCounters); ++it) {
 		refreshCounters[it->first] -= 1;
 	}
-	
-	//print values for debugging
-	/*
-	for (auto it = std::begin(refreshCounters); it != std::end(refreshCounters); ++it) {
-		printf("%s: %d\n", (it->first).c_str(), it->second);
-	}
-	*/
 }
 
 void Game::moveProjectiles() {
@@ -245,7 +237,7 @@ void Game::addMissiles() {
 		missileBufferPos--;
 		
 		if (isInBounds(x, y)) {
-			printf("adding missile at %d, %d\n", x, y);
+			//printf("adding missile at %d, %d\n", x, y);
 			
 			int durability = (rand() % 100 < Game::CRIT_MISSILE_CHANCE) ? 2 : 1;
 			
@@ -373,12 +365,13 @@ void Game::spawnBoss() {
 	bossSpawnFlag = true;
 	bossDestroyedFlag = false;
 	
-	boss = new BossPlayer(0, 0, 1, 5, 6);
+	boss = new BossPlayer(0, 0, 1, 5, 10);
 }
 
 void Game::destroyBoss() {
 	printf("removing boss\n");
 	
+	//+ 1 is avoid immediately respawning the boss 
 	score += Game::BOSS_SPAWN_CONDITION + 1;
 	
 	delete boss;
@@ -444,16 +437,42 @@ bool Game::isObstacleBehind(Missile* m, Obstacle* o) {
 	return false;
 }
 
-void Game::handleShoot() {
+void Game::addToMissileBuffer(int x, int y) {
 	/*
 	this function is necessary because using the "new" keyword is
 	not allowed in an ISR
+	
+	we use a C-style array because using STL is also not allowed
 	*/
 	if (missileBufferPos < MISSILE_BUFFER_SIZE) {
-		missileBuffer[missileBufferPos][0] = player.getPosx()-1;
-		missileBuffer[missileBufferPos][1] = player.getPosy();
+		missileBuffer[missileBufferPos][0] = x;
+		missileBuffer[missileBufferPos][1] = y;
 		
 		missileBufferPos++;
+	}
+}
+
+void Game::handleShoot() {
+	/*
+	player.getPosx()-1 is technically inside of the player, but we use it because
+	addMissiles() is called after moveProjectiles(), so this new missile will display
+	correctly on the next frame
+	*/
+	addToMissileBuffer(player.getPosx()-1, player.getPosy());
+}
+
+void Game::handleSuper() {
+	/*
+	player.getPosx()-1 is technically inside of the player, but we use it because
+	addMissiles() is called after moveProjectiles(), so this new missile will display
+	correctly on the next frame
+	*/
+	if (score >= Game::BOSS_SPAWN_CONDITION) {
+		for (int y = 0; y < Game::NUM_COLS; ++y) {
+			addToMissileBuffer(player.getPosx()-1, y);
+		}
+		
+		score -= Game::BOSS_SPAWN_CONDITION;
 	}
 }
 
@@ -467,6 +486,6 @@ void Game::spawnObstacles() {
 
 void Game::spawnMissiles() {
 	for (int y = 0; y < Game::NUM_COLS; ++y) {
-		missiles.push_back(new Missile(Game::NUM_ROWS-1, y));
+		missiles.push_back(new Missile(Game::NUM_ROWS-2, y));
 	}
 }

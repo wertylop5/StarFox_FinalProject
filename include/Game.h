@@ -21,16 +21,16 @@ class Obstacle;
 class Game {
 private:
 	static const int MAX_OBSTACLES_PER_SPAWN{ 1 };
-	static const int MISSILE_BUFFER_SIZE = 20;
+	static const int MISSILE_BUFFER_SIZE{ 30 };
 	
 	//chance out of 100 for a critical missile (hits 2 obstacles)
-	static const int CRIT_MISSILE_CHANCE = 20;
+	static const int CRIT_MISSILE_CHANCE{ 20 };
 	
 	//boss will spawn after score % BOSS_SPAWN_CONDITION == 0, score != 0
-	static const int BOSS_SPAWN_CONDITION = 5;
+	static const int BOSS_SPAWN_CONDITION{ 10 };
 	
 	//chance out of 100 for obstacles to spawn on a row
-	static const int OBSTACLE_SPAWN_CHANCE = 70;
+	static const int OBSTACLE_SPAWN_CHANCE{ 70 };
 	
 	//keeps track of what numbers on the board mean what
 	enum class BoardToken {
@@ -114,6 +114,9 @@ private:
 	*/
 	void addMissiles();
 	
+	//helper function to write to the missile buffer
+	void addToMissileBuffer(int x, int y);
+	
 	/*
 	runs checks on all projectiles to see if any have collided
 	*/
@@ -151,9 +154,12 @@ public:
 	*/
 	int score;
 	
+	/**
+	p is a Player object for the game to keep track of
+	*/
 	Game(Player& p): board{ }, player{ p }, boss{ 0 }, missileBuffer{ }, missileBufferPos{ 0 },
 		endGameFlag{ false }, bossSpawnFlag{ false }, bossDestroyedFlag{ false },
-		clampedBoard{ }, score{ 10 } {}
+		clampedBoard{ }, score{ 0 } {}
 	
 	~Game();
 	
@@ -191,16 +197,18 @@ public:
 	void handleShoot();
 	
 	/**
-	test function, spawns a bunch of missiles
+	handles the super move, which spawns missiles along a whole row
+	
+	super moves can only be used once the score has reached a certain threshold
+	(currently, when it is >= BOSS_SPAWN_CONDITION). score is then decreased by
+	that amount
 	*/
-	void spawnMissiles();
+	void handleSuper();
 	
 	/**
-	Adjust player position so that they are within board bounds
+	spawns a bunch of missiles along a whole row
 	*/
-	//void adjustPlayerBound(Player* p);
+	void spawnMissiles();
 };
-
-//#include "Player.h"
 
 #endif

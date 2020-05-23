@@ -48,12 +48,17 @@ void on_joystick_right(){
 	p.moveRight();
 }
 
+void on_super_shoot() {
+	g.handleSuper();
+}
+
 int main() {
 	printf("~~~~~~~~~~~~~~~~~~~PROGRAM START~~~~~~~~~~~~~~~~~~~\n");
 	
 	#ifndef GAME_DEBUG
 	LEDMatrix::create_LEDMatrix(PTD2, PTD0, PTD1);
 	Button shooter(PTD3, on_shoot);
+	Button supershooter(PTB19, on_super_shoot);
 	Joystick joystick(PTB2, PTB3, PTB11); // note PTB11 not used
     joystick.init();
 	score.begin();
@@ -93,8 +98,6 @@ int main() {
 		
 		ThisThread::sleep_for(REFRESH_TIME);
 	}
-	
-	
 	
 	printf("Game over!\n");
 	

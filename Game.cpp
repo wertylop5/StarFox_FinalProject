@@ -365,7 +365,7 @@ void Game::spawnBoss() {
 	bossSpawnFlag = true;
 	bossDestroyedFlag = false;
 	
-	boss = new BossPlayer(0, 0, 1, 5, 8);
+	boss = new BossPlayer(0, 0, 1, 5, 10);
 }
 
 void Game::destroyBoss() {

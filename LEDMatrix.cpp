@@ -14,7 +14,7 @@ void LEDMatrix::SPI_Write2(unsigned char MSB, unsigned char LSB)
     LEDMatrix::driver_cs->write(1);
 }
  
-/// MAX7219 initialisation
+/// MAX7219 initialisation also clears board
 void LEDMatrix::Init_MAX7219()
 {
     LEDMatrix::SPI_Write2(0x09, 0x00);         // Decoding off
@@ -39,7 +39,9 @@ SPI* LEDMatrix::driver_spi;
 DigitalOut* LEDMatrix::driver_cs;
 
 void LEDMatrix::create_LEDMatrix(PinName mosi, PinName cs, PinName clk){
-    LEDMatrix::driver_spi = new SPI(mosi, PTD3, clk);
+    // spi protocol for communication with MAX 7219 driver
+    LEDMatrix::driver_spi = new SPI(mosi, PTD3, clk); //PTD3 is not actually use
+    // digital out pin for loading in values serially
     LEDMatrix::driver_cs = new DigitalOut(cs, 1);
     LEDMatrix::driver_spi->format(8, 0);
     LEDMatrix::driver_spi->frequency(CLOCK_FREQUENCY);
@@ -51,9 +53,13 @@ LEDMatrix::LEDMatrix(){
     printf("Use LEDMatrix::create_LEDMatrix.\r\n");
 }
 
-void LEDMatrix::convertToHexArray(unsigned char* output, int board[8][8]){
+void LEDMatrix::encodeArray(unsigned char* output, int board[8][8]){
+    // loop through all rows in 2d int array
     for(int i=0; i < 8; i++){
+        // encode each row as a byte stored in a char
         for(int j=0; j < 8; j++){
+            // clamp values greater than 1 and less than 0
+            // NOTE: 0 means pixel off and 1 means pixel on
             if(board[i][j] >= 1){
                 output[i] |= 1 << j;
             }
@@ -65,11 +71,9 @@ void LEDMatrix::convertToHexArray(unsigned char* output, int board[8][8]){
 }
 
 void LEDMatrix::display(int board[8][8]){
-    // unsigned char led1[]= {
-    //     0xFF,0x18,0x18,0x18,0x18,0x18,0x18,0xFF
-    // };  //H
+    // convert 2D int array into 1D encoded char array
     unsigned char led1[8];
-    LEDMatrix::convertToHexArray(led1, board);
+    LEDMatrix::encodeArray(led1, board);
     for(int i=1; i<9; i++){      // Write first character (8 rows)
         LEDMatrix::SPI_Write2(i,led1[i-1]);
     }

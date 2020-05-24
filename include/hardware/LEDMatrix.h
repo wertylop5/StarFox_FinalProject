@@ -64,7 +64,7 @@ class LEDMatrix{
         static DigitalOut* driver_cs;
         static void SPI_Write2(unsigned char MSB, unsigned char LSB);
         static void Init_MAX7219();
-        static void convertToHexArray(unsigned char* output, int board[8][8]);
+        static void encodeArray(unsigned char* output, int board[8][8]);
 };
 
 #endif

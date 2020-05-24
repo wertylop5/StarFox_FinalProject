@@ -7,7 +7,6 @@ comment out to disable debug print statements and enable hardware usage
 
 #include "mbed.h"
 #include "include/Game.h"
-#include "Sseg.h"
 #include "include/hardware/LEDMatrix.h"
 #include "include/hardware/Button.h"
 #include "include/hardware/LeftRightControlStick.h"

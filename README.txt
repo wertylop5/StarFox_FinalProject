@@ -2,7 +2,11 @@ CS 3420/ECE 3140 Final Project: Star Fox
 
 Created by: Stanley Lin, Rodrigo Taipe, Michael Zhou
 
-You will need to install mbed middleware for this project.
+You will need to install mbed middleware for this project. Our group
+utilized mbed-cli. There are two ways to install it:
+	Instructions from here: https://os.mbed.com/docs/mbed-os/v5.15/quick-start/offline-with-mbed-cli.html
+	Install mbed-cli from python's pip package manager. Note that our group
+		used python 3.7 when installing through pip.
 
 To run this project:
 Go into the project root and run the following commands:

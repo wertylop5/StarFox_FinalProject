@@ -4,6 +4,7 @@ __pycache__/*
 mbed-os/*
 .vscode/*
 .hg/*
+sseg/*
 
 #might be auto created, don't want another
 .git/*
